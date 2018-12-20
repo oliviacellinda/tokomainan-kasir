@@ -181,7 +181,7 @@
 						}
                     },
                     error   : function(response) {
-						pesanPemberitahuan('warning', 'Gagal menambahkan data. Silakan mencoba kembali setelah beberapa saat.');
+						pesanPemberitahuan('warning', 'Gagal menyimpan data pelanggan baru.');
                     },
 					complete: function() {
 						refreshTabel();

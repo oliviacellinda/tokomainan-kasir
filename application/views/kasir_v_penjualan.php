@@ -156,6 +156,7 @@
 
                 <!-- Isi Modal -->
                 <div class="modal-body">
+					<div id="pesanPemberitahuanModal"></div>
                     <div class="row">
                         <div class="col-xs-12">
                             <form id="formTambahPelanggan" autocomplete="off">
@@ -421,6 +422,32 @@
 			$('div[class="box"]').append(loading);
 		} // End fungsi pesanLoading
 
+		// Fungsi untuk menambahkan pesan pemberitahuan di atas tabel
+		// Variabel jenis menampung nilai yang berisi informasi jenis alert yang diinginkan
+		// Variabel pesan menampung string yang berisi pesan yang ingin disampaikan
+		function pesanPemberitahuan(jenis, pesan) {
+			// Hapus terlebih dahulu jika sudah ada pesan pemberitahuan sebelumnya
+			$('.alert').remove();
+
+			var alert = '<div class="alert alert-'+jenis+' alert-dismissible" role="alert">';
+			alert += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			alert += pesan;
+			alert += '</div>';
+			$('#pesanPemberitahuan').append(alert);
+		} // End fungsi pesanPemberitahuan
+
+		// Fungsi untuk menampilkan pesan pemberitahuan pada modal tambah pelanggan
+		function pesanPemberitahuanModal(jenis, pesan) {
+			// Hapus terlebih dahulu jika sudah ada pesan pemberitahuan sebelumnya
+			$('.alert').remove();
+
+			var alert = '<div class="alert alert-'+jenis+' alert-dismissible" role="alert">';
+			alert += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			alert += pesan;
+			alert += '</div>';
+			$('#pesanPemberitahuanModal').append(alert);
+		} // End fungsi pesanPemberitahuan
+
 		// Fungsi untuk menyesuaikan tombol Pilih dalam modal daftar barang
 		function adjustTombolPilih() {
 			if(isiNota.length != 0) {
@@ -491,6 +518,7 @@
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-lokal',
+				dataType: 'json',
 				data	: {
 					today				: today,
 					subTotal			: subTotal,
@@ -505,11 +533,22 @@
 				},
 				success	: function(data) {
 					// Jika berhasil simpan dalam database kasir, cetak nota dan simpan ke database pusat
-					// Cetak nota
-					// ??
+					if(data == 'success') {
+						// cetak nota
 
-					// Simpan ke database pusat
-					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
+						// Simpan ke database pusat
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
+					}
+					else {
+						// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
+						var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
+						if(pesan == true) {
+							// cetak nota
+						}
+
+						// Simpan data ke database pusat
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, keterangan, isiNotaString);
+					}
 				},
 				error	: function(response) {
 					console.log(response.responseText);
@@ -517,14 +556,13 @@
 					var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
 					if(pesan == true) {
 						// Cetak nota
-						// ??
-
-						// Simpan data ke database pusat
-						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, keterangan, isiNotaString);
 					}
-					else {
 
-					}
+					// Simpan data ke database pusat
+					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, keterangan, isiNotaString);
+				},
+				complete: function() {
+					refreshHalaman();
 				}
 			})
 		} // End fungsi simpanNotaLokal
@@ -534,6 +572,7 @@
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-pusat',
+				dataType: 'json',
 				data	: {
 					today				: today,
 					subTotal			: subTotal,
@@ -547,8 +586,7 @@
 					isiNotaString		: isiNotaString
 				},
 				success	: function(data) {
-					console.log('yes');
-					refreshHalaman();
+					console.log(data);
 				},
 				error	: function(response) {
 					console.log(response.responseText);
@@ -613,6 +651,9 @@
 			$('input[name="id_pelanggan"]').val('');
 			$('input[name="level_pelanggan"]').val('');
 			$('input[name="keterangan"]').val('');
+			$('#labelSubTotal').text('');
+			$('input[name="diskonTotal"]').val(0);
+			$('#labelTotalPenjualan').text('');
 			$('#btnLihatData').prop('disabled', 'remove');
 			$('#disableTabelPenjualan').addClass('overlay');
 		} // End fungsi refreshHalaman
@@ -668,18 +709,48 @@
 						// Hilangkan progress bar
 						$('.progress').remove();
 
-						// Tutup modal
-						$('#modalFormPelanggan').modal('hide');
+						var statusSimpan = 0; // variabel status untuk mengecek keberhasila simpan data baru
+						var statusSinkronisasi = 0; // variabel status untuk mengecek keberhasilan sinkronisasi
 
-						// Tentukan nilai pada input cari pelanggan
-						$('input[name="cari_pelanggan"]').val(nama_pelanggan);
-						$('input[name="id_pelanggan"]').val(data);
+						if(data == 'cant connect') {
+							pesanPemberitahuanModal('warning', 'Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.');
+						}
+						else if(data == 'fail') {
+							pesanPemberitahuanModal('warning', 'Gagal menyimpan data pelanggan baru.');
+						}
+						else if(data == 'cant connect to sync') {
+							pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal karena tidak dapat terhubung dengan database pusat.');
+							statusSimpan = 1;
+						}
+						else {
+							statusSimpan = 1;
 
-						// Hilangkan disable pada button Lihat Data
-						$('#btnLihatData').removeAttr('disabled');
+							if(data.flag_error == 1) {
+								pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal. Silakan mencoba kembali setelah beberapa saat.');
+							}
+							else statusSinkronisasi = 1;
+						}
 
-						// Hilangkan disable pada tabel penjualan
-						$('#disableTabelPenjualan').removeClass('overlay');
+						if(statusSimpan == 1) {
+							// Tentukan nilai pada input cari pelanggan
+							$('input[name="cari_pelanggan"]').val(nama_pelanggan);
+							$('input[name="id_pelanggan"]').val(data.id_pelanggan);
+							$('input[name="level"]').val(data.level);
+
+							// Hilangkan disable pada button Lihat Data
+							$('#btnLihatData').removeAttr('disabled');
+
+							// Hilangkan disable pada tabel penjualan
+							$('#disableTabelPenjualan').removeClass('overlay');
+						}
+
+						if(statusSinkronisasi == 1) {
+							// Tutup modal
+							$('#modalFormPelanggan').modal('hide');
+						}
+					},
+					error : function(response) {
+						console.log(response.responseText);
 					}
 				});
 			}

@@ -133,6 +133,7 @@
                     }
                 },
                 error   : function(response) {
+                    console.log(response.responseText);
                     var pesan = '<p>Error sinkronisasi penjualan. Silakan mencoba kembali setelah beberapa saat.</p>';
                     $('#pesanError').append(pesan);
                 },

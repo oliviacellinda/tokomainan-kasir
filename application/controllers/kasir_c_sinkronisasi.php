@@ -212,7 +212,6 @@ class kasir_c_sinkronisasi extends CI_Controller {
         $this->load->model('kasir_m_stok');
 
         $data_penjualan_blm_upload = $this->kasir_m_sinkronisasi->data_penjualan_blm_upload();
-        print_r($data_penjualan_blm_upload);
 
         if($data_penjualan_blm_upload != '') {
             for($i=0; $i<count($data_penjualan_blm_upload); $i++) {
@@ -263,7 +262,7 @@ class kasir_c_sinkronisasi extends CI_Controller {
                     // Jika ada yang gagal, hitung berapa banyak kesalahan yang terjadi
                     if( $status_laporan[$i] == 0 || in_array(0, $status_detail[$i]) || in_array(0, $status_stok[$i]) ) {
                         $jumlah_error = $jumlah_error + 1;
-                    } 
+                    }
                 }
             } // End else untuk ($result !== false)
         } // End if $data_penjualan_blm_upload != ''

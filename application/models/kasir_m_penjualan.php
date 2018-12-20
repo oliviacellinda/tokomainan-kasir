@@ -33,43 +33,25 @@ class kasir_m_penjualan extends CI_Model {
     }
 
     public function tambah_laporan_penjualan($input_laporan_penjualan) {
-        $dbkasir = $this->load->database('dbkasir', TRUE);
+        $this->db->insert('laporan_penjualan', $input_laporan_penjualan);
 
-        $dbkasir->insert('laporan_penjualan', $input_laporan_penjualan);
+        if($this->db->affected_rows() >= 0) return 1;
+        else return 0;
     }
 
     public function tambah_detail_penjualan($detail_penjualan) {
-        $dbkasir = $this->load->database('dbkasir', TRUE);
-
-        $dbkasir->insert('detail_penjualan', $detail_penjualan);
-    }
-
-    public function tambah_laporan_penjualan_pusat($input_laporan_penjualan) {
-        $this->load->database();
-
-        $this->db->insert('laporan_penjualan', $input_laporan_penjualan);
-    }
-
-    public function tambah_detail_penjualan_pusat($detail_penjualan) {
-        $this->load->database();
-
         $this->db->insert('detail_penjualan', $detail_penjualan);
-    }
 
-    public function perbarui_stok_barang($id_barang, $id_toko, $jumlah) {
-        $this->load->database();
-
-        $query = 'UPDATE stok_barang SET stok_barang = stok_barang - ' . $jumlah;
-        $query .= ' WHERE id_barang = "' . $id_barang . '" AND id_toko = "' . $id_toko . '"';
-        $this->db->query($query); 
+        if($this->db->affected_rows() >= 0) return 1;
+        else return 0;
     }
 
     public function perbarui_status_penjualan_lokal($id_invoice) {
-        $dbkasir = $this->load->database('dbkasir', TRUE);
+        $this->db = $this->load->database('dbkasir', TRUE);
 
-        $dbkasir->set('status_upload', 1);
-        $dbkasir->where('id_invoice', $id_invoice);
-        $dbkasir->update('laporan_penjualan');
+        $this->db->set('status_upload', 1);
+        $this->db->where('id_invoice', $id_invoice);
+        $this->db->update('laporan_penjualan');
     }
 }
 ?>

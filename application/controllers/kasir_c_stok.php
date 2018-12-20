@@ -22,7 +22,6 @@ class kasir_c_stok extends CI_Controller {
 
         // Ambil data hanya di toko tempat kasir berada
         $id_toko = $this->kasir_m_stok->cek_toko($this->session->id_kasir);
-        // print_r($id_toko);
 
         $data = http_build_query(
             array(
