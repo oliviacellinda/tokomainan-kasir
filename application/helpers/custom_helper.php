@@ -12,7 +12,8 @@ if( ! function_exists('umur_stok_barang') ) {
         $today = new DateTime(date('Y-m-d'));
         $tanggal = new DateTime($string_tanggal);
         
-        return (date_diff($today, $tanggal))->days;
+        $interval = date_diff($today, $tanggal);
+        return $interval->days;
         // days adalah properti dari objek DateInterval
         // fungsi date_diff di atas menghasilkan objek DateInterval
     }

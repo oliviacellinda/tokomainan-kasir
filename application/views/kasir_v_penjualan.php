@@ -235,6 +235,33 @@
             </div> <!-- End modal-content -->
         </div> <!-- End modal-dialog -->
     </div> <!-- End modal -->
+
+	<!-- Modal Gambar -->
+	<div class="modal" id="modalGambar" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Judul Modal -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title">Gambar Barang</h4>
+                </div> <!-- End modal-header -->
+
+                <!-- Isi Modal -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <img id="gambarBarang" src="" alt="Gambar barang" style="width:100%">
+                        </div> <!-- End col-xs-12 -->
+                    </div> <!-- End row -->
+                </div> <!-- End modal-body -->
+
+                <!-- Kaki Modal -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                </div> <!-- End modal-footer -->
+            </div> <!-- End modal-content -->
+        </div> <!-- End modal-dialog -->
+    </div> <!-- End modal -->
     
     <script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/jquery/dist/jquery.min.js');?>"></script>
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/bootstrap/dist/js/bootstrap.min.js');?>"></script>
@@ -391,7 +418,7 @@
 					isi += '<td>'+isiNota[i].harga+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Diskon" name="diskon" value="'+isiNota[i].diskon+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].totalHarga+'</td>';
-					isi += '<td><button id="btnGambar" class="btn btn-xs btn-info" data-id="'+isiNota[i].idBarang+'">Gambar</button></td>';
+					isi += '<td><button id="btnGambar" class="btn btn-xs btn-info" data-id="'+isiNota[i].idBarang+'" data-toggle="modal" data-target="#modalGambar">Gambar</button></td>';
 					isi += '<td><button id="btnHapus" class="btn btn-xs btn-danger" data-id="'+isiNota[i].idBarang+'"><i class="fa fa-times"></i></button></td>';
 					isi += '</tr>';
 				}
@@ -474,21 +501,41 @@
 					}
 				}
 				isi += '</tbody>';
-
-				// Tambahkan data baru ke dalam tabel
-				$('#tabelBarang').append(isi);
-
-				// Reinitialize DataTable
-				tabelBarang.clear().destroy();
-				tabelBarang = $('#tabelBarang').DataTable({
-					'scrollX'		: true,
-					'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
-					'columnDefs'	: [
-						{ 'orderable' : false, 'targets' : 0 }
-					],
-					'order'			: [[ 1, 'asc' ]]
-				});
 			}
+			else {
+				// Hapus isi data tabel
+				$('#tabelBarang tbody').remove();
+				
+				// Buat variabel baru yang berisi HTML untuk isi data
+				var isi = '<tbody>';
+				if(daftarBarang.length > 0) {
+					for(var i=0; i<daftarBarang.length; i++) {
+						isi += '<tr>';
+						isi += '<td><button id="btnPilihBarang" class="btn btn-xs btn-success">Pilih</button></td>';
+						isi += '<td>'+daftarBarang[i].id_barang+'</td>';
+						isi += '<td>'+daftarBarang[i].nama_barang+'</td>';
+						isi += '<td>'+daftarBarang[i].jumlah_dlm_koli+'</td>';
+						isi += '<td>'+daftarBarang[i].kategori+'</td>';
+						isi += '<td>'+daftarBarang[i].fungsi+'</td>';
+						isi += '</tr>';
+					}
+				}
+				isi += '</tbody>';		
+			}
+
+			// Tambahkan data baru ke dalam tabel
+			$('#tabelBarang').append(isi);
+
+			// Reinitialize DataTable
+			tabelBarang.clear().destroy();
+			tabelBarang = $('#tabelBarang').DataTable({
+				'scrollX'		: true,
+				'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
+				'columnDefs'	: [
+					{ 'orderable' : false, 'targets' : 0 }
+				],
+				'order'			: [[ 1, 'asc' ]]
+			});	
 		} // End fungsi adjustTombolPilih
 
 		// Fungsi untuk menghitung total penjualan
@@ -758,9 +805,7 @@
 
 		// Ketika modal ditampilkan, sesuaikan button Pilih dengan isi nota
 		$('#modalDataBarang').on('show.bs.modal', function() {
-			if(isiNota.length != 0) {
-				adjustTombolPilih();
-			}
+			adjustTombolPilih();
 		}); // End event handler saat modal daftar barang ditampilkan
 
 		// Setelah modal selesai ditampilkan, atur kembali lebar kolom tabel barang
@@ -927,6 +972,22 @@
 				} // End if bukan baris input
 			} // End if tombol yang ditekan adalah Enter
 		}); // End event handler edit data dalam tabel penjualan
+
+		// Event handler tombol Gambar dalam tabel penjualan
+		$('#tabelPenjualan').on('click', '#btnGambar', function() {
+			var baris = tabelPenjualan.row($(this).parent()).index();
+			var idBarang = isiNota[baris-1].idBarang;
+			$.ajax({
+				url		: '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpg";?>',
+				type	: 'HEAD',
+				success : function() {
+					$('#gambarBarang').attr('src', '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpg";?>');
+				},
+				error	: function() {
+					$('#gambarBarang').attr('src', '<?php echo url_admin()."assets/uploads/' + idBarang + '.png";?>');
+				}
+			});
+		}); // End event handler tombol Gambar dalam tabel penjualan
 
 		// Event handler tombol Hapus dalam tabel penjualan
 		$('#tabelPenjualan').on('click', '#btnHapus', function() {
