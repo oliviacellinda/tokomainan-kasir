@@ -51,10 +51,11 @@
 							</div> <!-- End row -->
 
 							<div class="row">
-								<!-- ID Pelanggan -->
 								<input type="hidden" name="id_pelanggan">
-								<!-- Level Pelanggan -->
+								<input type="hidden" name="alamat">
+								<input type="hidden" name="telepon">
 								<input type="hidden" name="level">
+
 								<!-- Nama Pelanggan -->
 								<div class="col-xs-3">
 									<div class="form-group">
@@ -269,12 +270,15 @@
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js');?>"></script>
 	<script src="<?php echo base_url('assets/jquery-ui-1.12.1/jquery-ui.min.js');?>"></script>
 	<script src="<?php echo base_url('assets/printThis-master/printThis.js');?>"></script>
+	<script src="<?php echo base_url('assets/jsPDF-master/dist/jspdf.debug.js');?>"></script>
+	<script src="<?php echo base_url('assets/jsPDF-AutoTable-master/dist/jspdf.plugin.autotable.js');?>"></script>
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/dist/js/adminlte.min.js');?>"></script>
 
 	<script>
 	// Deklarasi variabel global
 	var isiNota = new Array();
 	var daftarBarang = JSON.parse('<?php echo json_encode($daftar_barang);?>');
+	var namaToko = '<?php echo $nama_toko['nama_toko'];?>';
 	var idBarangBaru, jumlahBaru, diskonBaru;
 
 	// Ambil nilai baru dari input
@@ -325,6 +329,8 @@
 				}
 				else { 
 					$('input[name="id_pelanggan"]').val(ui.item.id);
+					$('input[name="alamat"]').val(ui.item.alamat);
+					$('input[name="telepon"]').val(ui.item.telepon);
 					$('input[name="level"]').val(ui.item.level);
 					$('#btnLihatData').removeAttr('disabled');
 					$('#disableTabelPenjualan').removeClass('overlay');
@@ -352,6 +358,17 @@
 				}
 			});
 		} // End fungsi nomorInvoiceBaru
+
+		function tanggalSkrg() {
+			var today = new Date();
+			var d = ( today.getDate() >= 10 ) ? today.getDate() : ( '0' + today.getDate() ); // getDate mengembalikan nilai antara 1-31
+			var m = ( (today.getMonth() + 1) >= 10 ) ? today.getMonth() + 1 : ( '0' + (today.getMonth() + 1) ); // getMonth mengembalikan nilai antara 0-11
+			var y = today.getFullYear();
+			var tanggal = d + '-' + m + '-' + y;
+			tanggal = tanggal.toString();
+
+			return tanggal;
+		}
 
 		// Fungsi untuk memperbarui modal data barang
 		function refreshTabelBarang() {
@@ -581,7 +598,7 @@
 				success	: function(data) {
 					// Jika berhasil simpan dalam database kasir, cetak nota dan simpan ke database pusat
 					if(data == 'success') {
-						// cetak nota
+						cetakNota();
 
 						// Simpan ke database pusat
 						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
@@ -590,7 +607,7 @@
 						// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
 						var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
 						if(pesan == true) {
-							// cetak nota
+							cetakNota();
 						}
 
 						// Simpan data ke database pusat
@@ -602,7 +619,7 @@
 					// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
 					var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
 					if(pesan == true) {
-						// Cetak nota
+						cetakNota();
 					}
 
 					// Simpan data ke database pusat
@@ -633,59 +650,104 @@
 					isiNotaString		: isiNotaString
 				},
 				success	: function(data) {
-					console.log(data);
+					// console.log(data);
 				},
 				error	: function(response) {
-					console.log(response.responseText);
+					// console.log(response.responseText);
 				}
 			})
 		} // End fungsi simpanNotaPusat
 
-		// Fungsi untuk mencetak nota
 		function cetakNota() {
-			var print = '<div class="box">';
-			print += '<div class="box-body" id="cetakNota">';
-			print += '<table class="table table-bordered" width="100%">';
-			// Baris judul tabel
-			print += '<thead>';
-			print += '<tr>';
-			print += '<th>No</th>';
-			print += '<th>Jumlah Barang</th>';
-			print += '<th>Nama Barang</th>';
-			print += '<th>Kode Barang</th>';
-			print += '<th>Harga Satuan</th>';
-			print += '<th>Diskon</th>';
-			print += '<th>Total</th>';
-			print += '<th>Dus ke-</th>';
-			print += '</tr>';
-			print += '</thead>';
-			// Isi tabel
-			print += '<tbody>';
+			var jumlahHlm = Math.ceil(isiNota.length / 10);
+			var kolom = ["No", "Jumlah", "Nama Barang", "Kode Barang", "Harga Satuan", "Diskon", "Total", "Dus ke-"];
+			var data = new Array();
+			var nama = $('input[name="cari_pelanggan"]').val();
+			var alamat = $('input[name="alamat"]').val();
+			var telepon = $('input[name="telepon"]').val();
+			var pdf = new jsPDF('landscape', 'mm', 'a5');
+
 			for(var i=0; i<isiNota.length; i++) {
-				print += '<tr>';
-				print += '<td>' + (i+1) + '</td>';
-				print += '<td>' + isiNota[i].jumlah + '</td>';
-				print += '<td>' + isiNota[i].namaBarang + '</td>';
-				print += '<td>' + isiNota[i].idBarang + '</td>';
-				print += '<td>Rp. ' + isiNota[i].harga + '</td>';
-				if(isiNota[i].statusDiskon == 'p') print += '<td>' + isiNota[i].diskon + '%</td>';
-				else print += '<td>Rp. ' + isiNota[i].diskon + '</td>';
-				print += '<td>Rp. ' + isiNota[i].totalHarga + '</td>';
-				print += '<td></td>';
-				print += '</tr>';
+				var diskon = (isiNota[i].statusDiskon == 'n') ? 'Rp. '+isiNota[i].diskon : isiNota[i].diskon+'%';
+				var baris = [ i+1, isiNota[i].jumlah, isiNota[i].namaBarang, isiNota[i].idBarang, 'Rp. '+isiNota[i].harga, diskon, 'Rp. '+isiNota[i].totalHarga, '' ];
+				data.push(baris);
 			}
-			print += '</tbody>';
-			print += '</table>';
-			print += '</div>';
-			print += '</div>';
 
-			$('body .content').append(print);
+			for(var i=0; i<jumlahHlm; i++) {
+				var dataPerHlm = new Array();
+				
+				if(i+1 == jumlahHlm) {
+					var batas = data.length % 10;
+					for(j=i*10; j<(i*10)+batas; j++) {
+						dataPerHlm.push(data[j]);
+					}
+				}
+				else {
+					for(j=i*10; j<(i+1)*10; j++) {
+						dataPerHlm.push(data[j]);
+					}
+				}
+				
+				console.log(dataPerHlm);
 
-			$('#cetakNota').printThis({
-				importCSS : true,
-				importStyle : true,
-			});
-		} // End fungsi cetakNota
+				pdf.setFontSize(18);
+				pdf.text(namaToko, 10, 10, 'left');
+				pdf.setFontSize(8);
+				pdf.text('Tanggal', 140, 10, 'left');
+				pdf.setFontSize(8);
+				pdf.text(tanggalSkrg(), 155, 10, 'left');
+				pdf.setFontSize(8);
+				pdf.text('Nama', 140, 15, 'left');
+				pdf.setFontSize(8);
+				pdf.text(nama, 155, 15, 'left');
+				pdf.setFontSize(8);
+				pdf.text('Alamat', 140, 20, 'left');
+				pdf.setFontSize(8);
+				pdf.text(alamat, 155, 20, 'left');
+				pdf.setFontSize(8);
+				pdf.text('Telepon', 140, 25, 'left');
+				pdf.setFontSize(8);
+				pdf.text(telepon, 155, 25, 'left');
+
+				pdf.autoTable(kolom, dataPerHlm, {startX:10, startY: 30, theme: 'grid'});
+
+				pdf.setFontSize(10);
+				pdf.text((i+1).toString(), 105, 140, 'left');
+
+				if(i+1 != jumlahHlm) {
+					var subTotal = 0;
+					for(var a=0; a<dataPerHlm.length; a++) {
+						harga = dataPerHlm[a][6];
+						harga = harga.substring(4);
+						harga = parseInt(harga);
+						subTotal = subTotal + harga;
+					}
+					subTotal = subTotal.toString();
+
+					pdf.setFontSize(10);
+					pdf.text('Subtotal : Rp. '+subTotal, 200, 135, 'right');
+
+					pdf.addPage('landscape', 'a5');
+				}
+				else {
+					var subTotalPenjualan = $('#labelSubTotal').text();
+					var diskonTotal = $('input[name="diskonTotal"]').val();
+					if( diskonTotal.indexOf('%') == -1 ) diskonTotal = 'Rp. ' + diskonTotal;
+					else diskonTotal = diskonTotal;
+					var totalPenjualan = $('#labelTotalPenjualan').text();
+					
+					pdf.setFontSize(10);
+					pdf.text('Subtotal : Rp. '+subTotalPenjualan, 200, 125, 'right');
+					pdf.setFontSize(10);
+					pdf.text('Diskon : '+diskonTotal, 200, 130, 'right');
+					pdf.setFontSize(10);
+					pdf.text('Total : Rp. '+totalPenjualan, 200, 135, 'right');
+				}
+			}
+
+			pdf.autoPrint();
+			window.open(pdf.output('bloburl'), '_blank');
+		}
 
 		// Fungsi untuk refresh halaman
 		function refreshHalaman() {
@@ -782,6 +844,8 @@
 							// Tentukan nilai pada input cari pelanggan
 							$('input[name="cari_pelanggan"]').val(nama_pelanggan);
 							$('input[name="id_pelanggan"]').val(data.id_pelanggan);
+							$('input[name="alamat"]').val(alamat_pelanggan);
+							$('input[name="telepon"]').val(telepon_pelanggan);
 							$('input[name="level"]').val(data.level);
 
 							// Hilangkan disable pada button Lihat Data
@@ -1008,7 +1072,6 @@
 
 		// Event handler tombol Cetak Nota
 		$('#btnCetakNota').click(function() {
-			// cetakNota();
 			var today = new Date();
 			var d = ( today.getDate() >= 10 ) ? today.getDate() : ( '0' + today.getDate() ); // getDate mengembalikan nilai antara 1-31
 			var m = ( (today.getMonth() + 1) >= 10 ) ? today.getMonth() + 1 : ( '0' + (today.getMonth() + 1) ); // getMonth mengembalikan nilai antara 0-11

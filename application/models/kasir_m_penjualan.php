@@ -13,7 +13,7 @@ class kasir_m_penjualan extends CI_Model {
     }
 
     public function cari_pelanggan($keyword) {
-        $this->db->select('id_pelanggan, nama_pelanggan, level');
+        $this->db->select('id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, level');
         $this->db->from('pelanggan');
         $this->db->where('level', 4);
         $this->db->like('nama_pelanggan', $keyword);
@@ -29,6 +29,16 @@ class kasir_m_penjualan extends CI_Model {
 
         if($query->num_rows() > 0) {
             return $query->result_array();
+        }
+    }
+
+    public function lihat_nama_toko($id_kasir) {
+        $this->db->select('nama_toko');
+        $this->db->where('id_kasir', $id_kasir);
+        $query = $this->db->get('kasir');
+
+        if($query->num_rows() > 0) {
+            return $query->row_array();
         }
     }
 

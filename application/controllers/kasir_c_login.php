@@ -47,10 +47,13 @@ class kasir_c_login extends CI_Controller {
                         $baris = array(
                             'id_kasir'      => $daftar_kasir_baru[$i]['id_kasir'],
                             'password_kasir'=> $daftar_kasir_baru[$i]['password_kasir'],
-                            'id_toko'       => $daftar_kasir_baru[$i]['id_toko']
+                            'id_toko'       => $daftar_kasir_baru[$i]['id_toko'],
+                            'nama_toko'     => $daftar_kasir_baru[$i]['nama_toko']
                         );
                         $this->kasir_m_login->perbarui_data_kasir($baris);
                     }
+
+                    write_file('tgl_modifikasi_data_kasir_lokal.txt', date('Y-m-d H:i:s'));
                 }
 
                 $opts = array(
@@ -72,13 +75,15 @@ class kasir_c_login extends CI_Controller {
                         $daftar_kasir_dihapus = $result;
                         $daftar_kasir_lokal = $this->kasir_m_login->daftar_kasir_lokal();
 
-                        for($i=0; $i<count($daftar_kasir_dihapus); $i++) $a[] = $daftar_kasir_dihapus[$i]['id_kasir'];
-                        for($i=0; $i<count($daftar_kasir_lokal); $i++) $b[] = $daftar_kasir_lokal[$i]['id_kasir'];
+                        if($daftar_kasir_lokal != '') {
+                            for($i=0; $i<count($daftar_kasir_dihapus); $i++) $a[] = $daftar_kasir_dihapus[$i]['id_kasir'];
+                            for($i=0; $i<count($daftar_kasir_lokal); $i++) $b[] = $daftar_kasir_lokal[$i]['id_kasir'];
 
-                        $kasir_akan_dihapus = array_intersect($a, $b);
+                            $kasir_akan_dihapus = array_intersect($a, $b);
 
-                        foreach($kasir_akan_dihapus as $key=>$value) {
-                            $this->kasir_m_login->hapus_kasir($kasir_akan_dihapus[$key]);
+                            foreach($kasir_akan_dihapus as $key=>$value) {
+                                $this->kasir_m_login->hapus_kasir($kasir_akan_dihapus[$key]);
+                            }
                         }
                     }
 

@@ -18,10 +18,10 @@ class kasir_m_login extends CI_Model {
     }
 
     public function perbarui_data_kasir($data) {
-        $query = 'INSERT INTO kasir (id_kasir, password_kasir, id_toko) ';
-        $query .= 'VALUES (?, ?, ?) ';
+        $query = 'INSERT INTO kasir (id_kasir, password_kasir, id_toko, nama_toko) ';
+        $query .= 'VALUES (?, ?, ?, ?) ';
         $query .= 'ON DUPLICATE KEY UPDATE ';
-        $query .= 'id_kasir=VALUES(id_kasir), password_kasir=VALUES(password_kasir), id_toko=VALUES(id_toko)';
+        $query .= 'id_kasir=VALUES(id_kasir), password_kasir=VALUES(password_kasir), id_toko=VALUES(id_toko), nama_toko=VALUES(nama_toko)';
         $this->db->query($query, $data);
     }
 

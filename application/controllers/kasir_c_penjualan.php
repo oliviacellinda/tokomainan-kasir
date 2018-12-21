@@ -17,6 +17,7 @@ class kasir_c_penjualan extends CI_Controller {
         }
         else {
             $data['daftar_barang'] = $this->kasir_m_penjualan->lihat_barang();
+            $data['nama_toko'] = $this->kasir_m_penjualan->lihat_nama_toko($this->session->id_kasir);
             
             $this->load->view('kasir_v_penjualan', $data);
         }
@@ -36,10 +37,12 @@ class kasir_c_penjualan extends CI_Controller {
         if($data != '') {
 			// Ubah data sesuai dengan format autocomplete jquery-ui, jquery-ui membutuhkan informasi label dan value
 			for($i=0; $i<count($data); $i++) {
-				$response[$i]['label'] = $data[$i]['nama_pelanggan'];
-                $response[$i]['value'] = $data[$i]['nama_pelanggan'];
-                $response[$i]['id']    = $data[$i]['id_pelanggan'];
-                $response[$i]['level'] = $data[$i]['level'];
+				$response[$i]['label']   = $data[$i]['nama_pelanggan'];
+                $response[$i]['value']   = $data[$i]['nama_pelanggan'];
+                $response[$i]['id']      = $data[$i]['id_pelanggan'];
+                $response[$i]['alamat']  = $data[$i]['alamat_pelanggan'];
+                $response[$i]['telepon'] = $data[$i]['telepon_pelanggan'];
+                $response[$i]['level']   = $data[$i]['level'];
 			}
 			echo json_encode($response);
         }
