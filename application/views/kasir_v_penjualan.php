@@ -16,14 +16,6 @@
 		.table > tbody > tr > td {
 			vertical-align: middle;
 		}
-
-		@media print {
-			@page {
-				margin: 0mm !important;
-                size: 148mm 210mm !important; 
-				font-size: 10px;
-            }
-		}
 	</style>
 </head>
 
@@ -85,16 +77,16 @@
 					<!-- Tabel -->
 					<div class="box">
 						<div class="box-body">
-							<table id="tabelPenjualan" class="table table-bordered table-striped">
+							<table id="tabelPenjualan" class="table table-bordered table-striped" style="width:100%;">
 								<!-- Header Tabel -->
 								<thead>
 								<tr>
-									<th>No</th>
-									<th width="162.6px">ID Barang</th>
-									<th width="162.6px">Nama Barang</th>
-									<th width="80px">Jumlah (pcs)</th>
+									<th>ID Barang</th>
+									<th>Nama Barang</th>
+									<th width="80px">Kategori</th>
+									<th>Jumlah (pcs)</th>
 									<th width="80px">Harga (pcs)</th>
-									<th width="80px">Diskon</th>
+									<th>Diskon</th>
 									<th width="80px">Total Harga</th>
 									<th>Gambar</th>
 									<th>Hapus</th>
@@ -147,7 +139,7 @@
 
 	<!-- Modal Form Pelanggan -->
 	<div class="modal" id="modalFormPelanggan" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <!-- Judul Modal -->
                 <div class="modal-header">
@@ -160,29 +152,24 @@
 					<div id="pesanPemberitahuanModal"></div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <form id="formTambahPelanggan" autocomplete="off">
-								<div class="row">
-									<div class="col-xs-4"><label>Nama</label></div>
-									<div class="col-xs-4"><label>Alamat</label></div>
-									<div class="col-xs-4"><label>Telepon</label></div>
+                            <form id="formTambahPelanggan">
+								<div class="form-group" id="formNama">
+									<label>Nama</label>
+									<input type="text" class="form-control" name="nama_pelanggan" placeholder="Nama" autocomplete="off">
 								</div>
-								<div class="row">
-									<div class="col-xs-4">
-										<div class="form-group">
-											<input type="text" class="form-control" name="nama_pelanggan" placeholder="Nama" autocomplete="off" required>
-										</div>
-									</div>
-									<div class="col-xs-4">
-										<div class="form-group">
-											<input type="text" class="form-control" name="alamat_pelanggan" placeholder="Alamat" autocomplete="off" required>
-										</div>
-									</div>
-									<div class="col-xs-4">
-										<div class="form-group">
-											<input type="text" class="form-control" name="telepon_pelanggan" placeholder="Telepon" autocomplete="off" required>
-										</div>
-									</div>
+								<div class="form-group" id="formAlamat">
+									<label>Alamat</label>
+									<input type="text" class="form-control" name="alamat_pelanggan" placeholder="Alamat" autocomplete="off">
 								</div>
+								<div class="form-group" id="formEkspedisi">
+									<label>Ekspedisi</label>
+									<input type="text" class="form-control" name="ekspedisi" placeholder="Ekspedisi" autocomplete="off">
+								</div>
+								<div class="form-group" id="formTelepon">
+									<label>Telepon</label>
+									<input type="text" class="form-control" name="telepon_pelanggan" placeholder="Telepon" autocomplete="off">
+								</div>
+
 								<div id="loadingPelanggan" class="row"></div>
 							</form>
                         </div> <!-- End col-xs-12 -->
@@ -268,8 +255,8 @@
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/bootstrap/dist/js/bootstrap.min.js');?>"></script>
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/datatables.net/js/jquery.dataTables.min.js');?>"></script>
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js');?>"></script>
+	<script src="<?php echo base_url('assets/absolute.js');?>"></script>
 	<script src="<?php echo base_url('assets/jquery-ui-1.12.1/jquery-ui.min.js');?>"></script>
-	<script src="<?php echo base_url('assets/printThis-master/printThis.js');?>"></script>
 	<script src="<?php echo base_url('assets/jsPDF-master/dist/jspdf.debug.js');?>"></script>
 	<script src="<?php echo base_url('assets/jsPDF-AutoTable-master/dist/jspdf.plugin.autotable.js');?>"></script>
 	<script src="<?php echo base_url('assets/AdminLTE-2.4.2/dist/js/adminlte.min.js');?>"></script>
@@ -277,12 +264,16 @@
 	<script>
 	// Deklarasi variabel global
 	var isiNota = new Array();
+	var isiNotaPrint = new Array();
 	var daftarBarang = JSON.parse('<?php echo json_encode($daftar_barang);?>');
 	var namaToko = '<?php echo $nama_toko['nama_toko'];?>';
-	var idBarangBaru, jumlahBaru, diskonBaru;
+	var idBarangBaru, jumlahBaru, diskonBaru; // variabel yang digunakan untuk edit data nota
 
 	// Ambil nilai baru dari input
 	function ambilNilaiBaru(input) {
+		// $(input).parent().parent()
+		// input -> td -> tr
+		// input yang memanggil fungsi ambilNilaiBaru saat ini
 		idBarangBaru = $(input).parent().parent().find('input[name="id_barang"]').val();
 		jumlahBaru = $(input).parent().parent().find('input[name="jumlah"]').val();
 		diskonBaru = $(input).parent().parent().find('input[name="diskon"]').val();
@@ -296,14 +287,18 @@
 
 		var tabelBarang = $('#tabelBarang').DataTable();
 
+		var kategoriType = $.fn.dataTable.absoluteOrder('');
 		var tabelPenjualan = $('#tabelPenjualan').DataTable({
 			'scrollX'		: true,
 			'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
+			'order'			: [[ 2, 'asc' ]],
 			'columnDefs'	: [
-				{ 'orderable' : false, 'targets' : [ 7, 8] }
+				{ 'orderable' : false, 'targets' : [ 0, 1, 3, 4, 5, 6, 7, 8 ] },
+				{ 'targets' : 2, 'type' : kategoriType }
 			],
 			'paging'		: false,
-			'searching'		: false
+			'searching'		: false,
+			'stateSave'		: true
 		});
 
 		$('input[name="cari_pelanggan"]').autocomplete({
@@ -359,6 +354,7 @@
 			});
 		} // End fungsi nomorInvoiceBaru
 
+		// Fungsi untuk memperoleh tanggal saat ini untuk ditampilkan dalam nta
 		function tanggalSkrg() {
 			var today = new Date();
 			var d = ( today.getDate() >= 10 ) ? today.getDate() : ( '0' + today.getDate() ); // getDate mengembalikan nilai antara 1-31
@@ -368,7 +364,7 @@
 			tanggal = tanggal.toString();
 
 			return tanggal;
-		}
+		} // End fungsi tanggalSkrg
 
 		// Fungsi untuk memperbarui modal data barang
 		function refreshTabelBarang() {
@@ -413,10 +409,9 @@
 
 			// Buat variabel baru yang berisi HTML untuk isi data
 			var isi = '<tbody>';
-			// Baris input manual
 			isi += '<tr id="barisInput">';
+			isi += '<td><input type="text" class="form-control" style="width:125px;" placeholder="ID Barang" name="id_barang" autocomplete="off"></td>';
 			isi += '<td></td>';
-			isi += '<td><input type="text" class="form-control" placeholder="ID Barang" name="id_barang" autocomplete="off"></td>';
 			isi += '<td></td>';
 			isi += '<td></td>';
 			isi += '<td></td>';
@@ -427,13 +422,17 @@
 			isi += '</tr>';
 			if(isiNota.length != 0) {
 				for(var i=0; i<isiNota.length; i++) {
+					// Pengaturan untuk diskon
+					var diskon = isiNota[i].diskon;
+					diskon = (isiNota[i].statusDiskon == 'p') ? diskon+'%' : diskon;
+
 					isi += '<tr>';
-					isi += '<td>'+(i+1)+'</td>';
-					isi += '<td><input type="text" class="form-control" placeholder="ID Barang" name="id_barang" value="'+isiNota[i].idBarang+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
-					isi += '<td>'+isiNota[i].namaBarang+'</td>';
+					isi += '<td><input type="text" class="form-control" style="width:125px;" placeholder="ID Barang" name="id_barang" value="'+isiNota[i].idBarang+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
+					isi += '<td>'+isiNota[i].namaBarang+' ('+isiNota[i].jmlDlmKoli+' pcs)</td>';
+					isi += '<td>'+isiNota[i].kategori+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Jumlah (pcs)" name="jumlah" value="'+isiNota[i].jumlah+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].harga+'</td>';
-					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Diskon" name="diskon" value="'+isiNota[i].diskon+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
+					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Diskon" name="diskon" value="'+diskon+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].totalHarga+'</td>';
 					isi += '<td><button id="btnGambar" class="btn btn-xs btn-info" data-id="'+isiNota[i].idBarang+'" data-toggle="modal" data-target="#modalGambar">Gambar</button></td>';
 					isi += '<td><button id="btnHapus" class="btn btn-xs btn-danger" data-id="'+isiNota[i].idBarang+'"><i class="fa fa-times"></i></button></td>';
@@ -450,11 +449,28 @@
 			tabelPenjualan = $('#tabelPenjualan').DataTable({
 				'scrollX'		: true,
 				'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
+				'order'			: [[ 2, 'asc' ]],
 				'columnDefs'	: [
-					{ 'orderable' : false, 'targets' : [ 7, 8] }
+					{ 'orderable' : false, 'targets' : [ 0, 1, 3, 4, 5, 6, 7, 8 ] },
+					{ 'targets' : 2, 'type' : kategoriType }
 				],
 				'paging'		: false,
-				'searching'		: false
+				'searching'		: false,
+				'stateSave'		: true,
+				'fnPreDrawCallback'	: function(oSettings) {
+					/* reset currData before each draw */
+					currData = [];
+				},
+				'fnRowCallback'		: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					/* push this row of data to currData array */
+					currData.push(aData);
+			
+				},
+				'fnDrawCallback'	: function(oSettings) {
+					/* can now access sorted data array */
+					// console.log(currData);
+					isiNotaPrint = currData;
+				}
 			});
 		} // End fungsi refreshTabelPenjualan
 
@@ -615,7 +631,7 @@
 					}
 				},
 				error	: function(response) {
-					console.log(response.responseText);
+					// console.log(response.responseText);
 					// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
 					var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
 					if(pesan == true) {
@@ -658,20 +674,41 @@
 			})
 		} // End fungsi simpanNotaPusat
 
+		// Fungsi untuk mengambil dan menyusun data yang akan ditampilkan dalam nota, kemudian dicetak
 		function cetakNota() {
 			var jumlahHlm = Math.ceil(isiNota.length / 10);
-			var kolom = ["No", "Jumlah", "Nama Barang", "Kode Barang", "Harga Satuan", "Diskon", "Total", "Dus ke-"];
+			var kolom = ['No', 'Jumlah', 'Nama Barang', 'Kode Barang', 'Kategori', 'Harga Satuan', 'Diskon', 'Total', 'Dus ke-'];
 			var data = new Array();
 			var nama = $('input[name="cari_pelanggan"]').val();
 			var alamat = $('input[name="alamat"]').val();
 			var telepon = $('input[name="telepon"]').val();
 			var pdf = new jsPDF('landscape', 'mm', 'a5');
 
-			for(var i=0; i<isiNota.length; i++) {
-				var diskon = (isiNota[i].statusDiskon == 'n') ? 'Rp. '+isiNota[i].diskon : isiNota[i].diskon+'%';
-				var baris = [ i+1, isiNota[i].jumlah, isiNota[i].namaBarang, isiNota[i].idBarang, 'Rp. '+isiNota[i].harga, diskon, 'Rp. '+isiNota[i].totalHarga, '' ];
+			// for(var i=0; i<isiNota.length; i++) {
+			// 	var diskon = (isiNota[i].statusDiskon == 'n') ? 'Rp. '+isiNota[i].diskon : isiNota[i].diskon+'%';
+			// 	var baris = [ i+1, isiNota[i].jumlah, isiNota[i].namaBarang, isiNota[i].idBarang, 'Rp. '+isiNota[i].harga, diskon, 'Rp. '+isiNota[i].totalHarga, '' ];
+			// 	data.push(baris);
+			// }
+
+			for(var i=1; i<isiNotaPrint.length; i++) {
+				// Indeks isiNotaPrint
+				// 0 : ID Barang
+				// 1 : Nama Barang
+				// 2 : Kategori
+				// 3 : Jumlah
+				// 4 : Harga
+				// 5 : Diskon
+				// 6 : Total Harga
+
+				var idBarang = $( isiNotaPrint[i][0] ).val();
+				var jumlah = $( isiNotaPrint[i][3] ).val();
+				var diskon = $( isiNotaPrint[i][5] ).val();
+				if(diskon.indexOf('%') == -1) diskon = 'Rp. ' + diskon;
+
+				var baris = [ i, jumlah+' pcs', isiNotaPrint[i][1], idBarang, isiNotaPrint[i][2], 'Rp. '+isiNotaPrint[i][4], diskon, 'Rp. '+isiNotaPrint[i][6], '' ];
 				data.push(baris);
 			}
+			// console.log(data);
 
 			for(var i=0; i<jumlahHlm; i++) {
 				var dataPerHlm = new Array();
@@ -687,37 +724,53 @@
 						dataPerHlm.push(data[j]);
 					}
 				}
-				
-				console.log(dataPerHlm);
+				// console.log(dataPerHlm);
 
+				// Nama toko
 				pdf.setFontSize(18);
 				pdf.text(namaToko, 10, 10, 'left');
+
+				// Tanggal nota
 				pdf.setFontSize(8);
 				pdf.text('Tanggal', 140, 10, 'left');
 				pdf.setFontSize(8);
 				pdf.text(tanggalSkrg(), 155, 10, 'left');
+
+				// Nama pembeli
 				pdf.setFontSize(8);
 				pdf.text('Nama', 140, 15, 'left');
 				pdf.setFontSize(8);
 				pdf.text(nama, 155, 15, 'left');
+
+				// Alamat pembeli
 				pdf.setFontSize(8);
 				pdf.text('Alamat', 140, 20, 'left');
 				pdf.setFontSize(8);
 				pdf.text(alamat, 155, 20, 'left');
+
+				// Telepon pembeli
 				pdf.setFontSize(8);
 				pdf.text('Telepon', 140, 25, 'left');
 				pdf.setFontSize(8);
 				pdf.text(telepon, 155, 25, 'left');
 
-				pdf.autoTable(kolom, dataPerHlm, {startX:10, startY: 30, theme: 'grid'});
+				pdf.autoTable(kolom, dataPerHlm, {
+					startX	: 10,
+					startY	: 30,
+					theme	: 'grid',
+					styles	: {
+						overflow:'linebreak',
+						fontSize: 8
+					}
+				});
 
-				pdf.setFontSize(10);
+				pdf.setFontSize(8);
 				pdf.text((i+1).toString(), 105, 140, 'left');
 
 				if(i+1 != jumlahHlm) {
 					var subTotal = 0;
 					for(var a=0; a<dataPerHlm.length; a++) {
-						harga = dataPerHlm[a][6];
+						harga = dataPerHlm[a][7];
 						harga = harga.substring(4);
 						harga = parseInt(harga);
 						subTotal = subTotal + harga;
@@ -725,7 +778,11 @@
 					subTotal = subTotal.toString();
 
 					pdf.setFontSize(10);
-					pdf.text('Subtotal : Rp. '+subTotal, 200, 135, 'right');
+					pdf.setFontStyle('bold');
+					pdf.text('Subtotal', 150, 135, 'left');
+					pdf.setFontSize(10);
+					pdf.setFontStyle('normal');
+					pdf.text('Rp. '+subTotal, 190, 135, 'right');
 
 					pdf.addPage('landscape', 'a5');
 				}
@@ -736,18 +793,35 @@
 					else diskonTotal = diskonTotal;
 					var totalPenjualan = $('#labelTotalPenjualan').text();
 					
+					// Sub total penjualan
 					pdf.setFontSize(10);
-					pdf.text('Subtotal : Rp. '+subTotalPenjualan, 200, 125, 'right');
+					pdf.setFontStyle('bold');
+					pdf.text('Subtotal', 150, 125, 'left');
 					pdf.setFontSize(10);
-					pdf.text('Diskon : '+diskonTotal, 200, 130, 'right');
+					pdf.setFontStyle('normal');
+					pdf.text('Rp. '+subTotalPenjualan, 190, 125, 'right');
+
+					// Diskon total
 					pdf.setFontSize(10);
-					pdf.text('Total : Rp. '+totalPenjualan, 200, 135, 'right');
+					pdf.setFontStyle('bold');
+					pdf.text('Diskon', 150, 130, 'left');
+					pdf.setFontSize(10);
+					pdf.setFontStyle('normal');
+					pdf.text(diskonTotal, 190, 130, 'right');
+
+					// Total penjualan
+					pdf.setFontSize(10);
+					pdf.setFontStyle('bold');
+					pdf.text('Total', 150, 135, 'left');
+					pdf.setFontSize(10);
+					pdf.setFontStyle('normal');
+					pdf.text('Rp. '+totalPenjualan, 190, 135, 'right');
 				}
 			}
 
 			pdf.autoPrint();
 			window.open(pdf.output('bloburl'), '_blank');
-		}
+		} // End fungsi cetakNota
 
 		// Fungsi untuk refresh halaman
 		function refreshHalaman() {
@@ -772,98 +846,148 @@
 			$('input[name="nama_pelanggan"]').focus();
 		});
 		$('#modalFormPelanggan').on('keypress', 'input[name="nama_pelanggan"]', function(event) {
-			if(event.keyCode === 13) $('input[name="alamat_pelanggan"]').focus();
+			if(event.keyCode === 13) {
+				if( $(this).val() == '' ) {
+					$('#formNama').addClass('has-error');
+				}
+				else {
+					$('input[name="alamat_pelanggan"]').focus();
+				}
+			}
+			else {
+				$('#formNama').removeClass('has-error');
+			}
 		});
 		$('#modalFormPelanggan').on('keypress', 'input[name="alamat_pelanggan"]', function(event) {
-			if(event.keyCode === 13) $('input[name="telepon_pelanggan"]').focus();
+			if(event.keyCode === 13) {
+				if( $(this).val() == '' ) {
+					$('#formAlamat').addClass('has-error');
+				}
+				else {
+					$('input[name="ekspedisi"]').focus();
+				}
+			}
+			else {
+				$('#formAlamat').removeClass('has-error');
+			}
+		});
+		$('#modalFormPelanggan').on('keypress', 'input[name="ekspedisi"]', function(event) {
+			if(event.keyCode === 13) {
+				if( $(this).val() == '' ) {
+					$('#formEkspedisi').addClass('has-error');
+				}
+				else {
+					$('input[name="telepon_pelanggan"]').focus();
+				}
+			}
+			else {
+				$('#formEkspedisi').removeClass('has-error');
+			}
 		});
 		$('#modalFormPelanggan').on('keypress', 'input[name="telepon_pelanggan"]', function(event) {
 			if(event.keyCode === 13) {
-				// Progress bar selama proses tambah pelanggan
-				var loading = '<div class="progress">';
-				loading += '<div class="progress-bar progress-bar-success progress-bar-striped active progress-xs" style="width:100%"></div>';
-				loading += '</div>';
-				$('#loadingPelanggan').append(loading);
-
-				// Disable semua input dalam form
-				$('input[name="nama_pelanggan"]').prop('disabled', 'remove');
-				$('input[name="alamat_pelanggan"]').prop('disabled', 'remove');
-				$('input[name="telepon_pelanggan"]').prop('disabled', 'remove');
-
 				// Ambil data
 				var nama_pelanggan = $('input[name="nama_pelanggan"]').val();
 				var alamat_pelanggan = $('input[name="alamat_pelanggan"]').val();
+				var ekspedisi = $('input[name="ekspedisi"]').val();
 				var telepon_pelanggan = $('input[name="telepon_pelanggan"]').val();
 
-				$.ajax({
-					type	: 'post',
-					url		: 'penjualan-tambah-pelanggan',
-					dataType: 'json',
-					data	: {
-						nama_pelanggan		: nama_pelanggan,
-						alamat_pelanggan	: alamat_pelanggan,
-						telepon_pelanggan	: telepon_pelanggan
-					},
-					success	: function(data) {
-						// Reset value input
-						$('input[name="nama_pelanggan"]').val('');
-						$('input[name="alamat_pelanggan"]').val('');
-						$('input[name="telepon_pelanggan"]').val('');
-						
-						// Hilangkan disable pada input
-						$('input[name="nama_pelanggan"]').removeAttr('disabled');
-						$('input[name="alamat_pelanggan"]').removeAttr('disabled');
-						$('input[name="telepon_pelanggan"]').removeAttr('disabled');
+				if(nama_pelanggan == '' || alamat_pelanggan == '' || ekspedisi == '' || telepon_pelanggan == '') {
+					if(nama_pelanggan == '') $('#formNama').addClass('has-error');
+					if(alamat_pelanggan == '') $('#formAlamat').addClass('has-error');
+					if(ekspedisi == '') $('#formEkspedisi').addClass('has-error');
+					if(telepon_pelanggan == '') $('#formTelepon').addClass('has-error');
+				}
+				else {
+					// Progress bar selama proses tambah pelanggan
+					var loading = '<div class="progress">';
+					loading += '<div class="progress-bar progress-bar-success progress-bar-striped active progress-xs" style="width:100%"></div>';
+					loading += '</div>';
+					$('#loadingPelanggan').append(loading);
 
-						// Hilangkan progress bar
-						$('.progress').remove();
+					// Disable semua input dalam form
+					$('input[name="nama_pelanggan"]').prop('disabled', 'remove');
+					$('input[name="alamat_pelanggan"]').prop('disabled', 'remove');
+					$('input[name="ekspedisi"]').prop('disabled', 'remove');
+					$('input[name="telepon_pelanggan"]').prop('disabled', 'remove');
 
-						var statusSimpan = 0; // variabel status untuk mengecek keberhasila simpan data baru
-						var statusSinkronisasi = 0; // variabel status untuk mengecek keberhasilan sinkronisasi
+					$.ajax({
+						type	: 'post',
+						url		: 'penjualan-tambah-pelanggan',
+						dataType: 'json',
+						data	: {
+							nama_pelanggan		: nama_pelanggan,
+							alamat_pelanggan	: alamat_pelanggan,
+							ekspedisi			: ekspedisi,
+							telepon_pelanggan	: telepon_pelanggan
+						},
+						success	: function(data) {
+							// Reset value input
+							$('input[name="nama_pelanggan"]').val('');
+							$('input[name="alamat_pelanggan"]').val('');
+							$('input[name="ekspedisi"]').val('');
+							$('input[name="telepon_pelanggan"]').val('');
+							
+							// Hilangkan disable pada input
+							$('input[name="nama_pelanggan"]').removeAttr('disabled');
+							$('input[name="alamat_pelanggan"]').removeAttr('disabled');
+							$('input[name="ekspedisi"]').removeAttr('disabled');
+							$('input[name="telepon_pelanggan"]').removeAttr('disabled');
 
-						if(data == 'cant connect') {
-							pesanPemberitahuanModal('warning', 'Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.');
-						}
-						else if(data == 'fail') {
+							// Hilangkan progress bar
+							$('.progress').remove();
+
+							var statusSimpan = 0; // variabel status untuk mengecek keberhasila simpan data baru
+							var statusSinkronisasi = 0; // variabel status untuk mengecek keberhasilan sinkronisasi
+
+							if(data == 'cant connect') {
+								pesanPemberitahuanModal('warning', 'Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.');
+							}
+							else if(data == 'fail') {
+								pesanPemberitahuanModal('warning', 'Gagal menyimpan data pelanggan baru.');
+							}
+							else if(data == 'cant connect to sync') {
+								pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal karena tidak dapat terhubung dengan database pusat.');
+								statusSimpan = 1;
+							}
+							else {
+								statusSimpan = 1;
+
+								if(data.flag_error == 1) {
+									pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal. Silakan mencoba kembali setelah beberapa saat.');
+								}
+								else statusSinkronisasi = 1;
+							}
+
+							if(statusSimpan == 1) {
+								// Tentukan nilai pada input cari pelanggan
+								$('input[name="cari_pelanggan"]').val(nama_pelanggan);
+								$('input[name="id_pelanggan"]').val(data.id_pelanggan);
+								$('input[name="alamat"]').val(alamat_pelanggan);
+								$('input[name="telepon"]').val(telepon_pelanggan);
+								$('input[name="level"]').val(data.level);
+
+								// Hilangkan disable pada button Lihat Data
+								$('#btnLihatData').removeAttr('disabled');
+
+								// Hilangkan disable pada tabel penjualan
+								$('#disableTabelPenjualan').removeClass('overlay');
+							}
+
+							if(statusSinkronisasi == 1) {
+								// Tutup modal
+								$('#modalFormPelanggan').modal('hide');
+							}
+						},
+						error : function(response) {
+							console.log(response.responseText);
 							pesanPemberitahuanModal('warning', 'Gagal menyimpan data pelanggan baru.');
 						}
-						else if(data == 'cant connect to sync') {
-							pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal karena tidak dapat terhubung dengan database pusat.');
-							statusSimpan = 1;
-						}
-						else {
-							statusSimpan = 1;
-
-							if(data.flag_error == 1) {
-								pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal. Silakan mencoba kembali setelah beberapa saat.');
-							}
-							else statusSinkronisasi = 1;
-						}
-
-						if(statusSimpan == 1) {
-							// Tentukan nilai pada input cari pelanggan
-							$('input[name="cari_pelanggan"]').val(nama_pelanggan);
-							$('input[name="id_pelanggan"]').val(data.id_pelanggan);
-							$('input[name="alamat"]').val(alamat_pelanggan);
-							$('input[name="telepon"]').val(telepon_pelanggan);
-							$('input[name="level"]').val(data.level);
-
-							// Hilangkan disable pada button Lihat Data
-							$('#btnLihatData').removeAttr('disabled');
-
-							// Hilangkan disable pada tabel penjualan
-							$('#disableTabelPenjualan').removeClass('overlay');
-						}
-
-						if(statusSinkronisasi == 1) {
-							// Tutup modal
-							$('#modalFormPelanggan').modal('hide');
-						}
-					},
-					error : function(response) {
-						console.log(response.responseText);
-					}
-				});
+					});
+				}
+			}
+			else {
+				$('#formTelepon').removeClass('has-error');
 			}
 		}); // End event handler menambah pelanggan
 
@@ -891,7 +1015,10 @@
 				harga		: 0,
 				diskon		: 0,
 				statusDiskon: '',
-				totalHarga	: 0
+				totalHarga	: 0,
+				jmlDlmKoli	: data[3],
+				kategori	: data[4],
+				fungsi		: data[5]
 			};
 
 			// Cek harga
@@ -938,7 +1065,10 @@
 							harga		: 0,
 							diskon		: 0,
 							statusDiskon: '',
-							totalHarga	: 0
+							totalHarga	: 0,
+							jmlDlmKoli	: temp.jumlah_dlm_koli,
+							kategori	: temp.kategori,
+							fungsi		: temp.fungsi
 						};
 						var level = $('input[name="level"]').val();
 						switch(level) {
@@ -1028,7 +1158,8 @@
 							isiNota[baris-1].totalHarga = totalHarga;
 						}
 
-						tabelPenjualan.cell(baris, 6).data(totalHarga);
+						// tabelPenjualan.cell(baris, 6).data(totalHarga);
+						refreshTabelPenjualan();
 					}
 
 					totalPenjualan();
@@ -1072,6 +1203,7 @@
 
 		// Event handler tombol Cetak Nota
 		$('#btnCetakNota').click(function() {
+			// Ambil waktu saat ini dan sesuaikan dengan format database
 			var today = new Date();
 			var d = ( today.getDate() >= 10 ) ? today.getDate() : ( '0' + today.getDate() ); // getDate mengembalikan nilai antara 1-31
 			var m = ( (today.getMonth() + 1) >= 10 ) ? today.getMonth() + 1 : ( '0' + (today.getMonth() + 1) ); // getMonth mengembalikan nilai antara 0-11
@@ -1092,7 +1224,7 @@
 			var isiNotaString = JSON.stringify(isiNota);
 
 			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
-		});
+		}); // End event handler tombol Cetak Nota
 	});
 	</script>
 </body>

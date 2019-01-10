@@ -44,6 +44,7 @@
 									<th width="162.6px">ID Pelanggan</th>
 									<th width="162.6px">Nama</th>
 									<th width="162.6px">Alamat</th>
+									<th width="162.6px">Ekspedisi</th>
 									<th width="162.6px">Telepon</th>
 								</tr>
 								</thead>
@@ -104,6 +105,7 @@
 					isi += '<td></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Nama" name="nama_pelanggan" autocomplete="off"></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Alamat" name="alamat_pelanggan" autocomplete="off"></td>';
+					isi += '<td><input type="text" class="form-control" placeholder="Ekspedisi" name="ekspedisi" autocomplete="off"></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Telepon" name="telepon_pelanggan" autocomplete="off"></td>';
 					isi += '</tr>';
 					// Untuk daftar pelanggan
@@ -113,6 +115,7 @@
                             isi += '<td>'+data[i].id_pelanggan+'</td>';
                             isi += '<td>'+data[i].nama_pelanggan+'</td>';
                             isi += '<td>'+data[i].alamat_pelanggan+'</td>';
+                            isi += '<td>'+data[i].ekspedisi+'</td>';
                             isi += '<td>'+data[i].telepon_pelanggan+'</td>';
                             isi += '</tr>';
                         }
@@ -145,6 +148,9 @@
             if(event.keyCode === 13) $('#barisInput input[name="alamat_pelanggan"]').focus();
         });
         $('#tabelPelanggan').on('keypress', '#barisInput input[name="alamat_pelanggan"]', function(event) {
+            if(event.keyCode === 13) $('#barisInput input[name="ekspedisi"]').focus();
+        });
+        $('#tabelPelanggan').on('keypress', '#barisInput input[name="ekspedisi"]', function(event) {
             if(event.keyCode === 13) $('#barisInput input[name="telepon_pelanggan"]').focus();
         });
         // Saat menekan tombol Enter di Level, ambil seluruh nilai data baru dan simpan ke dalam database
@@ -156,6 +162,7 @@
                 // Kumpulkan data
                 var nama_pelanggan = $('#barisInput input[name="nama_pelanggan"]').val();
                 var alamat_pelanggan = $('#barisInput input[name="alamat_pelanggan"]').val();
+                var ekspedisi = $('#barisInput input[name="ekspedisi"]').val();
                 var telepon_pelanggan = $('#barisInput input[name="telepon_pelanggan"]').val();
 
                 $.ajax({
@@ -165,6 +172,7 @@
                     data    : {
                         nama_pelanggan      : nama_pelanggan,
                         alamat_pelanggan    : alamat_pelanggan,
+                        ekspedisi		    : ekspedisi,
                         telepon_pelanggan   : telepon_pelanggan,
                     },
                     success : function(data) {

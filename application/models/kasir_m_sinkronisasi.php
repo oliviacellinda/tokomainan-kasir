@@ -8,9 +8,9 @@ class kasir_m_sinkronisasi extends CI_Model {
     }
 
     public function perbarui_pelanggan($data) {
-        $query = 'INSERT INTO pelanggan (id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, maks_utang, level) ';
-        $query .= 'VALUES ("'.$data['id_pelanggan'].'","'.$data['nama_pelanggan'].'","'.$data['alamat_pelanggan'].'","'.$data['telepon_pelanggan'].'",'.$data['maks_utang'].',"'.$data['level'].'") ';
-        $query .= 'ON DUPLICATE KEY UPDATE nama_pelanggan="'.$data['nama_pelanggan'].'", alamat_pelanggan="'.$data['alamat_pelanggan'].'", telepon_pelanggan="'.$data['telepon_pelanggan'].'", maks_utang='.$data['maks_utang'].', level="'.$data['level'].'"';
+        $query = 'INSERT INTO pelanggan (id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, maks_utang, level, ekspedisi) ';
+        $query .= 'VALUES ("'.$data['id_pelanggan'].'","'.$data['nama_pelanggan'].'","'.$data['alamat_pelanggan'].'","'.$data['telepon_pelanggan'].'",'.$data['maks_utang'].',"'.$data['level'].'", "'.$data['ekspedisi'].'") ';
+        $query .= 'ON DUPLICATE KEY UPDATE nama_pelanggan="'.$data['nama_pelanggan'].'", alamat_pelanggan="'.$data['alamat_pelanggan'].'", telepon_pelanggan="'.$data['telepon_pelanggan'].'", maks_utang='.$data['maks_utang'].', level="'.$data['level'].'", ekspedisi="'.$data['ekspedisi'].'"';
         $this->db->query($query);
 
         if($this->db->affected_rows() >= 0) return 1;

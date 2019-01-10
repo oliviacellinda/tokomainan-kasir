@@ -36,9 +36,12 @@
 								<!-- Header Tabel -->
 								<thead>
 								<tr>
+									<th width="162.6px">ID Barang</th>
 									<th width="162.6px">Nama Barang</th>
-									<th width="162.6px">Stok</th>
-									<th width="162.6px">Umur</th>
+									<th width="100px">Harga Barang</th>
+									<th width="100px">Stok</th>
+									<th width="100px">Umur</th>
+									<th width="100px">Jumlah dlm Koli</th>
 								</tr>
 								</thead>
 
@@ -94,9 +97,12 @@
                     else if(data != 'no data') {
                         for(var i=0; i<data.length; i++) {
                             isi += '<tr>';
+                            isi += '<td>'+data[i].id_barang+'</td>';
                             isi += '<td>'+data[i].nama_barang+'</td>';
-                            isi += '<td>'+data[i].stok_barang+'</td>';
+                            isi += '<td data-order="'+data[i].harga_jual_4+'">Rp. '+data[i].harga_jual_4+'</td>';
+                            isi += '<td data-order="'+data[i].stok_barang+'">'+data[i].stok_barang+' pcs</td>';
                             isi += '<td data-order="'+data[i].umur_barang+'">'+data[i].umur_barang+' hari</td>';
+                            isi += '<td data-order="'+data[i].jumlah_dlm_koli+'">'+data[i].jumlah_dlm_koli+' pcs</td>';
                             isi += '</tr>';
                         }
                     }

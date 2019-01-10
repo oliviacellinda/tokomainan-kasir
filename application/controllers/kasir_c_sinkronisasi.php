@@ -57,6 +57,7 @@ class kasir_c_sinkronisasi extends CI_Controller {
                         'id_pelanggan'      => $pelanggan_baru[$i]['id_pelanggan'],
                         'nama_pelanggan'    => $pelanggan_baru[$i]['nama_pelanggan'],
                         'alamat_pelanggan'  => $pelanggan_baru[$i]['alamat_pelanggan'],
+                        'ekspedisi'         => $pelanggan_baru[$i]['ekspedisi'],
                         'telepon_pelanggan' => $pelanggan_baru[$i]['telepon_pelanggan'],
                         'maks_utang'        => $pelanggan_baru[$i]['maks_utang'],
                         'level'             => $pelanggan_baru[$i]['level']
@@ -218,7 +219,7 @@ class kasir_c_sinkronisasi extends CI_Controller {
                 $id_toko[$i] = $this->kasir_m_stok->cek_toko($data_penjualan_blm_upload[$i]['id_kasir']);
                 $detail_penjualan_blm_upload[$i] = $this->kasir_m_sinkronisasi->detail_penjualan_blm_upload($data_penjualan_blm_upload[$i]['id_invoice']);
             }
-
+            
             $data = http_build_query(
                 array(
                     'laporan_penjualan' => json_encode($data_penjualan_blm_upload),
