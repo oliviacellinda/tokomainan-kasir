@@ -81,6 +81,7 @@
 								<!-- Header Tabel -->
 								<thead>
 								<tr>
+									<th>No.</th>
 									<th>ID Barang</th>
 									<th>Nama Barang</th>
 									<th width="80px">Kategori</th>
@@ -287,14 +288,16 @@
 
 		var tabelBarang = $('#tabelBarang').DataTable();
 
+		var nomorType = $.fn.dataTable.absoluteOrder('');
 		var kategoriType = $.fn.dataTable.absoluteOrder('');
 		var tabelPenjualan = $('#tabelPenjualan').DataTable({
 			'scrollX'		: true,
 			'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
-			'order'			: [[ 2, 'asc' ]],
+			'order'			: [[ 0, 'asc' ]],
 			'columnDefs'	: [
-				{ 'orderable' : false, 'targets' : [ 0, 1, 3, 4, 5, 6, 7, 8 ] },
-				{ 'targets' : 2, 'type' : kategoriType }
+				{ 'orderable' : false, 'targets' : [ 1, 2, 4, 5, 6, 7, 8 ] },
+				{ 'targets' : 0, 'type' : nomorType },
+				{ 'targets' : 3, 'type' : kategoriType }
 			],
 			'paging'		: false,
 			'searching'		: false,
@@ -410,6 +413,7 @@
 			// Buat variabel baru yang berisi HTML untuk isi data
 			var isi = '<tbody>';
 			isi += '<tr id="barisInput">';
+			isi += '<td></td>';
 			isi += '<td><input type="text" class="form-control" style="width:125px;" placeholder="ID Barang" name="id_barang" autocomplete="off"></td>';
 			isi += '<td></td>';
 			isi += '<td></td>';
@@ -427,6 +431,7 @@
 					diskon = (isiNota[i].statusDiskon == 'p') ? diskon+'%' : diskon;
 
 					isi += '<tr>';
+					isi += '<td>'+(i+1)+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:125px;" placeholder="ID Barang" name="id_barang" value="'+isiNota[i].idBarang+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].namaBarang+' ('+isiNota[i].jmlDlmKoli+' pcs)</td>';
 					isi += '<td>'+isiNota[i].kategori+'</td>';
@@ -449,10 +454,11 @@
 			tabelPenjualan = $('#tabelPenjualan').DataTable({
 				'scrollX'		: true,
 				'bInfo'			: false, // Untuk menghilangkan tulisan keterangan di bawah tabel
-				'order'			: [[ 2, 'asc' ]],
+				'order'			: [[ 0, 'asc' ]],
 				'columnDefs'	: [
-					{ 'orderable' : false, 'targets' : [ 0, 1, 3, 4, 5, 6, 7, 8 ] },
-					{ 'targets' : 2, 'type' : kategoriType }
+					{ 'orderable' : false, 'targets' : [ 1, 2, 4, 5, 6, 7, 8 ] },
+					{ 'targets' : 0, 'type' : nomorType },
+					{ 'targets' : 3, 'type' : kategoriType }
 				],
 				'paging'		: false,
 				'searching'		: false,
@@ -594,7 +600,7 @@
 		} // End fungsi totalPenjualan
 
 		// Fungsi untuk menyimpan nota dalam database kasir
-		function simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString) {
+		function simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString) {
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-lokal',
@@ -608,6 +614,8 @@
 					nomorInvoice		: nomorInvoice,
 					idPelanggan			: idPelanggan,
 					namaPelanggan		: namaPelanggan,
+					alamatPelanggan		: alamatPelanggan,
+					teleponPelanggan	: teleponPelanggan,
 					keterangan			: keterangan,
 					isiNotaString		: isiNotaString
 				},
@@ -617,7 +625,7 @@
 						cetakNota();
 
 						// Simpan ke database pusat
-						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
 					}
 					else {
 						// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
@@ -627,7 +635,7 @@
 						}
 
 						// Simpan data ke database pusat
-						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, keterangan, isiNotaString);
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
 					}
 				},
 				error	: function(response) {
@@ -639,7 +647,7 @@
 					}
 
 					// Simpan data ke database pusat
-					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, keterangan, isiNotaString);
+					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
 				},
 				complete: function() {
 					refreshHalaman();
@@ -648,7 +656,7 @@
 		} // End fungsi simpanNotaLokal
 
 		// Fungsi untuk menyimpan nota dalam database admin
-		function simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString) {
+		function simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString) {
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-pusat',
@@ -662,6 +670,8 @@
 					nomorInvoice		: nomorInvoice,
 					idPelanggan			: idPelanggan,
 					namaPelanggan		: namaPelanggan,
+					alamatPelanggan		: alamatPelanggan,
+					teleponPelanggan	: teleponPelanggan,
 					keterangan			: keterangan,
 					isiNotaString		: isiNotaString
 				},
@@ -692,20 +702,21 @@
 
 			for(var i=1; i<isiNotaPrint.length; i++) {
 				// Indeks isiNotaPrint
-				// 0 : ID Barang
-				// 1 : Nama Barang
-				// 2 : Kategori
-				// 3 : Jumlah
-				// 4 : Harga
-				// 5 : Diskon
-				// 6 : Total Harga
+				// 0 : Nomor
+				// 1 : ID Barang
+				// 2 : Nama Barang
+				// 3 : Kategori
+				// 4 : Jumlah
+				// 5 : Harga
+				// 6 : Diskon
+				// 7 : Total Harga
 
-				var idBarang = $( isiNotaPrint[i][0] ).val();
-				var jumlah = $( isiNotaPrint[i][3] ).val();
-				var diskon = $( isiNotaPrint[i][5] ).val();
+				var idBarang = $( isiNotaPrint[i][1] ).val();
+				var jumlah = $( isiNotaPrint[i][4] ).val();
+				var diskon = $( isiNotaPrint[i][6] ).val();
 				if(diskon.indexOf('%') == -1) diskon = 'Rp. ' + diskon;
 
-				var baris = [ i, jumlah+' pcs', isiNotaPrint[i][1], idBarang, isiNotaPrint[i][2], 'Rp. '+isiNotaPrint[i][4], diskon, 'Rp. '+isiNotaPrint[i][6], '' ];
+				var baris = [ i, jumlah+' pcs', isiNotaPrint[i][2], idBarang, isiNotaPrint[i][3], 'Rp. '+isiNotaPrint[i][5], diskon, 'Rp. '+isiNotaPrint[i][7], '' ];
 				data.push(baris);
 			}
 			// console.log(data);
@@ -1105,7 +1116,7 @@
 						if(cekNota != null) {
 							// Jika ada, kembalikan ID Barang ke nilai semula
 							var idBarangSemula = cell.split('value="').pop();
-							idBarangSemula = idBarangSemula.replace('" onkeypress="ambilNilaiBaru(this)">', '');
+							idBarangSemula = idBarangSemula.replace('" onkeypress="ambilNilaiBaru(this)" autocomplete="off">', '');
 							$(this).find('input[name="id_barang"]').val(idBarangSemula);
 						}
 						else {
@@ -1114,7 +1125,7 @@
 							if(cekDaftar == null) {
 								// Jika tidak ada, kembalikan ID Barang ke nilai semula
 								var idBarangSemula = cell.split('value="').pop();
-								idBarangSemula = idBarangSemula.replace('" onkeypress="ambilNilaiBaru(this)">', '');
+								idBarangSemula = idBarangSemula.replace('" onkeypress="ambilNilaiBaru(this)" autocomplete="off">', '');
 								$(this).find('input[name="id_barang"]').val(idBarangSemula);
 							}
 							else {
@@ -1141,25 +1152,56 @@
 					else if( cell.indexOf('name="jumlah"') != -1 || cell.indexOf('name="diskon"') != -1 ) {
 						var jumlah = jumlahBaru;
 						var diskon = diskonBaru;
-						var harga = tabelPenjualan.cell(baris, 4).data();
+						var harga = tabelPenjualan.cell(baris, 5).data();
 						var totalHarga = 0;
-						isiNota[baris-1].jumlah = jumlah;
-						isiNota[baris-1].diskon = parseInt(diskon);
 
-						// Cek jenis diskon (persentase atau nominal)
-						if( diskon.indexOf('%') == -1 ) {
-							totalHarga = ( parseInt(jumlah) * (parseInt(harga) - parseInt(diskon)) ).toString();
-							isiNota[baris-1].statusDiskon = 'n';
-							isiNota[baris-1].totalHarga = totalHarga;
+						// Cek apakah jumlah dan diskon kosong
+						if( jumlah == '' || diskon == '' ) {
+							// if(jumlah == '') $(this).closest('tr').find('input[name="jumlah"]').val(0);
+							// if(diskon == '') $(this).closest('tr').find('input[name="diskon"]').val(0);
+							refreshTabelPenjualan();
+						}
+						// Cek apakah jumlah dan diskon bukan angka
+						else if( isNaN(parseInt(jumlah)) || isNaN(parseInt(diskon)) ) {
+							// if( isNaN(parseInt(jumlah)) ) $(this).closest('tr').find('input[name="jumlah"]').val(0);
+							// if( isNaN(parseInt(diskon)) ) $(this).closest('tr').find('input[name="diskon"]').val(0);
+							refreshTabelPenjualan();
+						}
+						// Cek apakah jumlah dan diskon bernilai negatif
+						else if( parseInt(jumlah) < 0 || parseInt(diskon) < 0 ) {
+							// if( parseInt(jumlah) < 0 ) $(this).closest('tr').find('input[name="jumlah"]').val(0);
+							// if( parseInt(diskon) < 0 ) $(this).closest('tr').find('input[name="diskon"]').val(0);
+							refreshTabelPenjualan();
+						}
+						// Cek apakah diskon lebih besar dari 100%
+						else if( diskon.indexOf('%') != -1 && (parseInt(diskon)) > 100 ) {
+							// $(this).closest('tr').find('input[name="diskon"]').val(0);
+							refreshTabelPenjualan();
+						}
+						// Cek apakah diskon melebihi harga satuan
+						else if( (parseInt(diskon)) > (parseInt(harga)) ) {
+							// $(this).closest('tr').find('input[name="diskon"]').val(0);
+							refreshTabelPenjualan();
 						}
 						else {
-							totalHarga = ( (parseInt(jumlah) * parseInt(harga)) * (100 - parseInt(diskon)) / 100 ).toString();
-							isiNota[baris-1].statusDiskon = 'p';
-							isiNota[baris-1].totalHarga = totalHarga;
-						}
+							isiNota[baris-1].jumlah = parseInt(jumlah);
+							isiNota[baris-1].diskon = parseInt(diskon);
 
-						// tabelPenjualan.cell(baris, 6).data(totalHarga);
-						refreshTabelPenjualan();
+							// Cek jenis diskon (persentase atau nominal)
+							if( diskon.indexOf('%') == -1 ) {
+								totalHarga = ( parseInt(jumlah) * (parseInt(harga) - parseInt(diskon)) ).toString();
+								isiNota[baris-1].statusDiskon = 'n';
+								isiNota[baris-1].totalHarga = totalHarga;
+							}
+							else {
+								totalHarga = ( (parseInt(jumlah) * parseInt(harga)) * (100 - parseInt(diskon)) / 100 ).toString();
+								isiNota[baris-1].statusDiskon = 'p';
+								isiNota[baris-1].totalHarga = totalHarga;
+							}
+							
+							// tabelPenjualan.cell(baris, 6).data(totalHarga);
+							refreshTabelPenjualan();
+						}
 					}
 
 					totalPenjualan();
@@ -1220,10 +1262,12 @@
 			var nomorInvoice = $('#nomorInvoice').text();
 			var idPelanggan = $('input[name="id_pelanggan"]').val();
 			var namaPelanggan = $('input[name="cari_pelanggan"]').val();
+			var alamatPelanggan = $('input[name="alamat"]').val();
+			var teleponPelanggan = $('input[name="telepon"]').val();
 			var keterangan = $('input[name="keterangan"]').val();
 			var isiNotaString = JSON.stringify(isiNota);
 
-			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, keterangan, isiNotaString);
+			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
 		}); // End event handler tombol Cetak Nota
 	});
 	</script>

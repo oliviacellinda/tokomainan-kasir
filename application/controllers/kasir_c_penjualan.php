@@ -201,6 +201,8 @@ class kasir_c_penjualan extends CI_Controller {
             'total_penjualan'         => $this->input->post('totalPenjualan'),
             'id_pelanggan'            => $this->input->post('idPelanggan'),
             'nama_pelanggan'          => $this->input->post('namaPelanggan'),
+            'alamat_pelanggan'        => $this->input->post('alamatPelanggan'),
+            'telepon_pelanggan'       => $this->input->post('teleponPelanggan'),
             'keterangan'              => $this->input->post('keterangan'),
             'status_upload'           => 0
         );        
@@ -251,6 +253,8 @@ class kasir_c_penjualan extends CI_Controller {
             'total_penjualan'         => $this->input->post('totalPenjualan'),
             'id_pelanggan'            => $this->input->post('idPelanggan'),
             'nama_pelanggan'          => $this->input->post('namaPelanggan'),
+            'alamat_pelanggan'        => $this->input->post('alamatPelanggan'),
+            'telepon_pelanggan'       => $this->input->post('teleponPelanggan'),
             'keterangan'              => $this->input->post('keterangan')
         );
         $isiNota = json_decode($this->input->post('isiNotaString'), true);
