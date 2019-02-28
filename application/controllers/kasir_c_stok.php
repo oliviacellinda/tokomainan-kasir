@@ -36,7 +36,7 @@ class kasir_c_stok extends CI_Controller {
             )
         );
         $context = stream_context_create($opts);
-        $result = file_get_contents(url_admin().'lihat-stok-barang', false, $context);
+        $result = @file_get_contents(url_admin().'lihat-stok-barang', false, $context);
 
         if($result === false) {
             echo json_encode('cant connect');

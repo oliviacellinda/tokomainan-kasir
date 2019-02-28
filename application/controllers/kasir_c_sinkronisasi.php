@@ -75,7 +75,6 @@ class kasir_c_sinkronisasi extends CI_Controller {
         /* Hapus data pelanggan di database kasir -------------------------------------------------- */
         $opts = array(
             'http' => array(
-                'method'    => 'POST',
                 'header'    => 'Content-type: application/x-www-form-urlencoded'
             )
         );
@@ -170,7 +169,6 @@ class kasir_c_sinkronisasi extends CI_Controller {
         /* Hapus data barang di database kasir -------------------------------------------------- */
         $opts = array(
             'http' => array(
-                'method'    => 'POST',
                 'header'    => 'Content-type: application/x-www-form-urlencoded'
             )
         );

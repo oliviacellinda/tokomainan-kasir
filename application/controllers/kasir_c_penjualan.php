@@ -152,7 +152,6 @@ class kasir_c_penjualan extends CI_Controller {
                 /* Sinkronisasi data pelanggan: delete data yang sudah dihapus dari database pusat */
                 $opts = array(
                     'http' => array(
-                        'method'    => 'POST',
                         'header'    => 'Content-type: application/x-www-form-urlencoded'
                     )
                 );

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 if( ! function_exists('url_admin') ) {
     function url_admin() {
-        return 'http://localhost/tokomainan-superadmin/';
+        return 'http://www.rajamainan88.com/';
     }
 }
 

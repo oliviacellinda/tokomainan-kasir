@@ -58,7 +58,6 @@ class kasir_c_login extends CI_Controller {
 
                 $opts = array(
                     'http' => array(
-                        'method'    => 'POST',
                         'header'    => 'Content-type: application/x-www-form-urlencoded'
                     )
                 );

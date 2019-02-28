@@ -76,11 +76,11 @@
 		});
 
 		// Isi tabel
-		pesanLoading();
 		refreshTabel();
-		$('.overlay').remove();
 
 		function refreshTabel() {
+			pesanLoading();
+
 			$.ajax({
 				type	: 'post',
 				url		: 'lihat-stok',
@@ -121,6 +121,9 @@
 				error	: function(response) {
 					// Tampilkan pesan pemberitahuan
 					pesanPemberitahuan('warning', 'Terdapat kesalahan saat memuat data. Silakan mencoba kembali.');
+				},
+				complete: function() {
+					$('.overlay').remove();
 				}
 			});// End ajax
 		} // End fungsi refreshTabel

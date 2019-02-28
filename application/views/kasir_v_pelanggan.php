@@ -90,6 +90,8 @@
 		refreshTabel();
 
 		function refreshTabel() {
+			pesanLoading();
+
 			$.ajax({
 				type	: 'post',
 				url		: 'lihat-pelanggan',
@@ -139,6 +141,9 @@
 				error	: function(response) {
 					// Tampilkan pesan pemberitahuan
 					pesanPemberitahuan('warning', 'Terdapat kesalahan saat memuat data. Silakan mencoba kembali.');
+				},
+				complete: function() {
+					$('.overlay').remove();
 				}
 			});// End ajax
 		} // End fungsi refreshTabel
