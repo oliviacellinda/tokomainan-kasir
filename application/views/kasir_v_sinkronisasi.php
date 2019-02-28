@@ -62,16 +62,16 @@
                 dataType: 'json',
                 success : function(data) {
                     if(data == 'cant connect') {
-                        var pesan = '<p>Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
+                        var pesan = '<p>Error sinkronisasi pelanggan: Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
                         $('#pesanError').append(pesan);
                     }
                     else {
                         if(data.length > 1) {
-                            var pesan = '<p>' + data[1] + '</p>';
+                            var pesan = '<p>Error sinkronisasi pelanggan: ' + data[1] + '</p>';
                             $('#pesanError').append(pesan);
                         }
                         if(data.length > 2) {
-                            var pesan = '<p>' + data[2] + '</p>';
+                            var pesan = '<p>Error sinkronisasi pelanggan: ' + data[2] + '</p>';
                             $('#pesanError').append(pesan);
                         }
                     }
@@ -93,16 +93,16 @@
                 dataType: 'json',
                 success : function(data) {
                     if(data == 'cant connect') {
-                        var pesan = '<p>Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
+                        var pesan = '<p>Error sinkronisasi barang: Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
                         $('#pesanError').append(pesan);
                     }
                     else {
                         if(data.length > 1) {
-                            var pesan = '<p>' + data[1] + '</p>';
+                            var pesan = '<p>Error sinkronisasi barang: ' + data[1] + '</p>';
                             $('#pesanError').append(pesan);
                         }
                         if(data.length > 2) {
-                            var pesan = '<p>' + data[2] + '</p>';
+                            var pesan = '<p>Error sinkronisasi barang: ' + data[2] + '</p>';
                             $('#pesanError').append(pesan);
                         }
                     }
@@ -124,16 +124,15 @@
                 dataType: 'json',
                 success : function(data) {
                     if(data == 'cant connect') {
-                        var pesan = '<p>Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
+                        var pesan = '<p>Error sinkronisasi penjualan: Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
                         $('#pesanError').append(pesan);
                     }
                     else if(data > 0) {
-                        var pesan = '<p>Gagal mengunggah ' + data + ' laporan penjualan.</p>';
+                        var pesan = '<p>Error sinkronisasi penjualan: Gagal mengunggah ' + data + ' laporan penjualan.</p>';
                         $('#pesanError').append(pesan);
                     }
                 },
                 error   : function(response) {
-                    console.log(response.responseText);
                     var pesan = '<p>Error sinkronisasi penjualan. Silakan mencoba kembali setelah beberapa saat.</p>';
                     $('#pesanError').append(pesan);
                 },

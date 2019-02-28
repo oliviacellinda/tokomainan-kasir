@@ -84,7 +84,7 @@
 									<th>No.</th>
 									<th>ID Barang</th>
 									<th>Nama Barang</th>
-									<th width="80px">Kategori</th>
+									<th width="80px">Kemasan</th>
 									<th>Jumlah (pcs)</th>
 									<th width="80px">Harga (pcs)</th>
 									<th>Diskon</th>
@@ -207,7 +207,7 @@
 									<th>ID Barang</th>
 									<th>Nama Barang</th>
 									<th>Jumlah dlm koli</th>
-									<th>Kategori</th>
+									<th>Kemasan</th>
 									<th>Fungsi</th>
 								</tr>
 								</thead>
@@ -383,7 +383,7 @@
 					isi += '<td>'+daftarBarang[i].id_barang+'</td>';
 					isi += '<td>'+daftarBarang[i].nama_barang+'</td>';
 					isi += '<td>'+daftarBarang[i].jumlah_dlm_koli+'</td>';
-					isi += '<td>'+daftarBarang[i].kategori+'</td>';
+					isi += '<td>'+daftarBarang[i].kemasan+'</td>';
 					isi += '<td>'+daftarBarang[i].fungsi+'</td>';
 					isi += '</tr>';
 				}
@@ -434,7 +434,7 @@
 					isi += '<td>'+(i+1)+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:125px;" placeholder="ID Barang" name="id_barang" value="'+isiNota[i].idBarang+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].namaBarang+' ('+isiNota[i].jmlDlmKoli+' pcs)</td>';
-					isi += '<td>'+isiNota[i].kategori+'</td>';
+					isi += '<td>'+isiNota[i].kemasan+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Jumlah (pcs)" name="jumlah" value="'+isiNota[i].jumlah+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
 					isi += '<td>'+isiNota[i].harga+'</td>';
 					isi += '<td><input type="text" class="form-control" style="width:100px;" placeholder="Diskon" name="diskon" value="'+diskon+'" onkeypress="ambilNilaiBaru(this)" autocomplete="off"></td>';
@@ -534,7 +534,7 @@
 						isi += '<td>'+daftarBarang[i].id_barang+'</td>';
 						isi += '<td>'+daftarBarang[i].nama_barang+'</td>';
 						isi += '<td>'+daftarBarang[i].jumlah_dlm_koli+'</td>';
-						isi += '<td>'+daftarBarang[i].kategori+'</td>';
+						isi += '<td>'+daftarBarang[i].kemasan+'</td>';
 						isi += '<td>'+daftarBarang[i].fungsi+'</td>';
 						isi += '</tr>';
 					}
@@ -554,7 +554,7 @@
 						isi += '<td>'+daftarBarang[i].id_barang+'</td>';
 						isi += '<td>'+daftarBarang[i].nama_barang+'</td>';
 						isi += '<td>'+daftarBarang[i].jumlah_dlm_koli+'</td>';
-						isi += '<td>'+daftarBarang[i].kategori+'</td>';
+						isi += '<td>'+daftarBarang[i].kemasan+'</td>';
 						isi += '<td>'+daftarBarang[i].fungsi+'</td>';
 						isi += '</tr>';
 					}
@@ -639,7 +639,7 @@
 					}
 				},
 				error	: function(response) {
-					// console.log(response.responseText);
+					console.log(response.responseText);
 					// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
 					var pesan = confirm('Data gagal disimpan dalam database! Tetap cetak nota?');
 					if(pesan == true) {
@@ -687,7 +687,7 @@
 		// Fungsi untuk mengambil dan menyusun data yang akan ditampilkan dalam nota, kemudian dicetak
 		function cetakNota() {
 			var jumlahHlm = Math.ceil(isiNota.length / 10);
-			var kolom = ['No', 'Jumlah', 'Nama Barang', 'Kode Barang', 'Kategori', 'Harga Satuan', 'Diskon', 'Total', 'Dus ke-'];
+			var kolom = ['No', 'Jumlah', 'Nama Barang', 'Kode Barang', 'Kemasan', 'Harga Satuan', 'Diskon', 'Total', 'Dus ke-'];
 			var data = new Array();
 			var nama = $('input[name="cari_pelanggan"]').val();
 			var alamat = $('input[name="alamat"]').val();
@@ -705,7 +705,7 @@
 				// 0 : Nomor
 				// 1 : ID Barang
 				// 2 : Nama Barang
-				// 3 : Kategori
+				// 3 : Kemasan
 				// 4 : Jumlah
 				// 5 : Harga
 				// 6 : Diskon
@@ -1028,7 +1028,7 @@
 				statusDiskon: '',
 				totalHarga	: 0,
 				jmlDlmKoli	: data[3],
-				kategori	: data[4],
+				kemasan		: data[4],
 				fungsi		: data[5]
 			};
 
@@ -1078,7 +1078,7 @@
 							statusDiskon: '',
 							totalHarga	: 0,
 							jmlDlmKoli	: temp.jumlah_dlm_koli,
-							kategori	: temp.kategori,
+							kemasan		: temp.kemasan,
 							fungsi		: temp.fungsi
 						};
 						var level = $('input[name="level"]').val();
@@ -1268,6 +1268,7 @@
 			var isiNotaString = JSON.stringify(isiNota);
 
 			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
+			// console.log(isiNota);
 		}); // End event handler tombol Cetak Nota
 	});
 	</script>

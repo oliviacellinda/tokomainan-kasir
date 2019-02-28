@@ -150,7 +150,7 @@ class kasir_c_sinkronisasi extends CI_Controller {
                         'id_barang'         => $barang_baru[$i]['id_barang'],
                         'jumlah_dlm_koli'   => $barang_baru[$i]['jumlah_dlm_koli'],
                         'nama_barang'       => $barang_baru[$i]['nama_barang'],
-                        'kategori'          => $barang_baru[$i]['kategori'],
+                        'kemasan'           => $barang_baru[$i]['kemasan'],
                         'fungsi'            => $barang_baru[$i]['fungsi'],
                         'harga_jual_1'      => $barang_baru[$i]['harga_jual_1'],
                         'harga_jual_2'      => $barang_baru[$i]['harga_jual_2'],

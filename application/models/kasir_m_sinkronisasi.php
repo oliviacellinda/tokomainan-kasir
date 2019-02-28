@@ -35,9 +35,9 @@ class kasir_m_sinkronisasi extends CI_Model {
     }
 
     public function perbarui_barang($data) {
-        $query = 'INSERT INTO barang (id_barang, nama_barang, jumlah_dlm_koli, kategori, fungsi, harga_jual_1, harga_jual_2, harga_jual_3, harga_jual_4) ';
-        $query .= 'VALUES ("'.$data['id_barang'].'", "'.$data['nama_barang'].'", '.$data['jumlah_dlm_koli'].', "'.$data['kategori'].'", "'.$data['fungsi'].'", '.$data['harga_jual_1'].', '.$data['harga_jual_2'].', '.$data['harga_jual_3'].', '.$data['harga_jual_4'].') ';
-        $query .= 'ON DUPLICATE KEY UPDATE id_barang="'.$data['id_barang'].'", nama_barang="'.$data['nama_barang'].'", jumlah_dlm_koli='.$data['jumlah_dlm_koli'].', kategori="'.$data['kategori'].'", fungsi="'.$data['fungsi'].'", harga_jual_1='.$data['harga_jual_1'].', harga_jual_2='.$data['harga_jual_2'].', harga_jual_3='.$data['harga_jual_3'].', harga_jual_4='.$data['harga_jual_4'];
+        $query = 'INSERT INTO barang (id_barang, nama_barang, jumlah_dlm_koli, kemasan, fungsi, harga_jual_1, harga_jual_2, harga_jual_3, harga_jual_4) ';
+        $query .= 'VALUES ("'.$data['id_barang'].'", "'.$data['nama_barang'].'", '.$data['jumlah_dlm_koli'].', "'.$data['kemasan'].'", "'.$data['fungsi'].'", '.$data['harga_jual_1'].', '.$data['harga_jual_2'].', '.$data['harga_jual_3'].', '.$data['harga_jual_4'].') ';
+        $query .= 'ON DUPLICATE KEY UPDATE id_barang="'.$data['id_barang'].'", nama_barang="'.$data['nama_barang'].'", jumlah_dlm_koli='.$data['jumlah_dlm_koli'].', kemasan="'.$data['kemasan'].'", fungsi="'.$data['fungsi'].'", harga_jual_1='.$data['harga_jual_1'].', harga_jual_2='.$data['harga_jual_2'].', harga_jual_3='.$data['harga_jual_3'].', harga_jual_4='.$data['harga_jual_4'];
         $this->db->query($query);
 
         if($this->db->affected_rows() >= 0) return 1;
