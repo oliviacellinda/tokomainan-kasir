@@ -47,6 +47,7 @@
 								<input type="hidden" name="alamat">
 								<input type="hidden" name="telepon">
 								<input type="hidden" name="level">
+								<input type="hidden" name="ekspedisi">
 
 								<!-- Nama Pelanggan -->
 								<div class="col-xs-3">
@@ -164,7 +165,7 @@
 								</div>
 								<div class="form-group" id="formEkspedisi">
 									<label>Ekspedisi</label>
-									<input type="text" class="form-control" name="ekspedisi" placeholder="Ekspedisi" autocomplete="off">
+									<input type="text" class="form-control" name="ekspedisi_pelanggan" placeholder="Ekspedisi" autocomplete="off">
 								</div>
 								<div class="form-group" id="formTelepon">
 									<label>Telepon</label>
@@ -238,8 +239,8 @@
                 <!-- Isi Modal -->
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-xs-12">
-                            <img id="gambarBarang" src="" alt="Gambar barang" style="width:100%">
+                        <div class="col-xs-12" id="gambarBarang">
+						<i class="fa fa-spin fa-refresh"></i>
                         </div> <!-- End col-xs-12 -->
                     </div> <!-- End row -->
                 </div> <!-- End modal-body -->
@@ -330,6 +331,7 @@
 					$('input[name="alamat"]').val(ui.item.alamat);
 					$('input[name="telepon"]').val(ui.item.telepon);
 					$('input[name="level"]').val(ui.item.level);
+					$('input[name="ekspedisi"]').val(ui.item.ekspedisi);
 					$('#btnLihatData').removeAttr('disabled');
 					$('#disableTabelPenjualan').removeClass('overlay');
 				}
@@ -600,7 +602,7 @@
 		} // End fungsi totalPenjualan
 
 		// Fungsi untuk menyimpan nota dalam database kasir
-		function simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString) {
+		function simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString) {
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-lokal',
@@ -616,6 +618,7 @@
 					namaPelanggan		: namaPelanggan,
 					alamatPelanggan		: alamatPelanggan,
 					teleponPelanggan	: teleponPelanggan,
+					ekspedisiPelanggan	: ekspedisiPelanggan,
 					keterangan			: keterangan,
 					isiNotaString		: isiNotaString
 				},
@@ -625,7 +628,7 @@
 						cetakNota();
 
 						// Simpan ke database pusat
-						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString);
 					}
 					else {
 						// Tampilkan pesan pemberitahuan, dan lakukan tindakan sesuai pilihan kasir
@@ -635,7 +638,7 @@
 						}
 
 						// Simpan data ke database pusat
-						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
+						simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString);
 					}
 				},
 				error	: function(response) {
@@ -647,7 +650,7 @@
 					}
 
 					// Simpan data ke database pusat
-					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
+					simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString);
 				},
 				complete: function() {
 					refreshHalaman();
@@ -656,7 +659,7 @@
 		} // End fungsi simpanNotaLokal
 
 		// Fungsi untuk menyimpan nota dalam database admin
-		function simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString) {
+		function simpanNotaPusat(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString) {
 			$.ajax({
 				type	: 'post',
 				url		: 'simpan-nota-pusat',
@@ -672,6 +675,7 @@
 					namaPelanggan		: namaPelanggan,
 					alamatPelanggan		: alamatPelanggan,
 					teleponPelanggan	: teleponPelanggan,
+					ekspedisiPelanggan	: ekspedisiPelanggan,
 					keterangan			: keterangan,
 					isiNotaString		: isiNotaString
 				},
@@ -692,6 +696,8 @@
 			var nama = $('input[name="cari_pelanggan"]').val();
 			var alamat = $('input[name="alamat"]').val();
 			var telepon = $('input[name="telepon"]').val();
+			var ekspedisi = $('input[name="ekspedisi"]').val();
+			var nomorNota = $('#nomorInvoice').text();
 			var pdf = new jsPDF('landscape', 'mm', 'a5');
 
 			// for(var i=0; i<isiNota.length; i++) {
@@ -741,6 +747,10 @@
 				pdf.setFontSize(18);
 				pdf.text(namaToko, 10, 10, 'left');
 
+				// Nomor nota
+				pdf.setFontSize(12);
+				pdf.text('No. Nota: '+nomorNota, 10, 20, 'left');
+
 				// Tanggal nota
 				pdf.setFontSize(8);
 				pdf.text('Tanggal', 140, 10, 'left');
@@ -765,9 +775,15 @@
 				pdf.setFontSize(8);
 				pdf.text(telepon, 155, 25, 'left');
 
+				// Ekspedisi
+				pdf.setFontSize(8);
+				pdf.text('Ekspedisi', 140, 30, 'left');
+				pdf.setFontSize(8);
+				pdf.text(ekspedisi, 155, 30, 'left');
+
 				pdf.autoTable(kolom, dataPerHlm, {
 					startX	: 10,
-					startY	: 30,
+					startY	: 35,
 					theme	: 'grid',
 					styles	: {
 						overflow:'linebreak',
@@ -852,6 +868,14 @@
 			$('#disableTabelPenjualan').addClass('overlay');
 		} // End fungsi refreshHalaman
 
+		// Fungsi untuk mengecek gambar
+		function cekGambar(urlGambar, success, fail) {
+			var img = new Image();
+			img.src = urlGambar;
+			img.onload = success; 
+			img.onerror = fail;
+		} // End fungsi cekGambar
+
 		// Event handler untuk menambah pelanggan
 		$('#modalFormPelanggan').on('shown.bs.modal', function() {
 			$('input[name="nama_pelanggan"]').focus();
@@ -900,7 +924,7 @@
 				// Ambil data
 				var nama_pelanggan = $('input[name="nama_pelanggan"]').val();
 				var alamat_pelanggan = $('input[name="alamat_pelanggan"]').val();
-				var ekspedisi = $('input[name="ekspedisi"]').val();
+				var ekspedisi = $('input[name="ekspedisi_pelanggan"]').val();
 				var telepon_pelanggan = $('input[name="telepon_pelanggan"]').val();
 
 				if(nama_pelanggan == '' || alamat_pelanggan == '' || ekspedisi == '' || telepon_pelanggan == '') {
@@ -919,7 +943,7 @@
 					// Disable semua input dalam form
 					$('input[name="nama_pelanggan"]').prop('disabled', 'remove');
 					$('input[name="alamat_pelanggan"]').prop('disabled', 'remove');
-					$('input[name="ekspedisi"]').prop('disabled', 'remove');
+					$('input[name="ekspedisi_pelanggan"]').prop('disabled', 'remove');
 					$('input[name="telepon_pelanggan"]').prop('disabled', 'remove');
 
 					$.ajax({
@@ -936,13 +960,13 @@
 							// Reset value input
 							$('input[name="nama_pelanggan"]').val('');
 							$('input[name="alamat_pelanggan"]').val('');
-							$('input[name="ekspedisi"]').val('');
+							$('input[name="ekspedisi_pelanggan"]').val('');
 							$('input[name="telepon_pelanggan"]').val('');
 							
 							// Hilangkan disable pada input
 							$('input[name="nama_pelanggan"]').removeAttr('disabled');
 							$('input[name="alamat_pelanggan"]').removeAttr('disabled');
-							$('input[name="ekspedisi"]').removeAttr('disabled');
+							$('input[name="ekspedisi_pelanggan"]').removeAttr('disabled');
 							$('input[name="telepon_pelanggan"]').removeAttr('disabled');
 
 							// Hilangkan progress bar
@@ -977,6 +1001,7 @@
 								$('input[name="alamat"]').val(alamat_pelanggan);
 								$('input[name="telepon"]').val(telepon_pelanggan);
 								$('input[name="level"]').val(data.level);
+								$('input[name="ekspedisi"]').val(ekspedisi);
 
 								// Hilangkan disable pada button Lihat Data
 								$('#btnLihatData').removeAttr('disabled');
@@ -1212,18 +1237,20 @@
 
 		// Event handler tombol Gambar dalam tabel penjualan
 		$('#tabelPenjualan').on('click', '#btnGambar', function() {
+			$('#gambarBarang').html('<i class="fa fa-spin fa-refresh"></i>');
+		
 			var baris = tabelPenjualan.row($(this).parent()).index();
 			var idBarang = isiNota[baris-1].idBarang;
-			$.ajax({
-				url		: '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpg";?>',
-				type	: 'HEAD',
-				success : function() {
-					$('#gambarBarang').attr('src', '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpg";?>');
-				},
-				error	: function() {
-					$('#gambarBarang').attr('src', '<?php echo url_admin()."assets/uploads/' + idBarang + '.png";?>');
-				}
-			});
+			var gambarJpg = '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpg";?>';
+			var gambarPng = '<?php echo url_admin()."assets/uploads/' + idBarang + '.png";?>';
+			var gambarJpeg = '<?php echo url_admin()."assets/uploads/' + idBarang + '.jpeg";?>';
+			var gambarDefault = '<?php echo base_url()."assets/image/default.jpg";?>';
+
+			cekGambar(gambarJpg, function(){ $('#gambarBarang').html('<img src="'+gambarJpg+'" style="width: 100%"></img>'); }, function(){  } );
+			cekGambar(gambarJpeg, function(){ $('#gambarBarang').html('<img src="'+gambarJpeg+'" style="width: 100%"></img>'); }, function(){  } );
+			cekGambar(gambarPng, function(){ $('#gambarBarang').html('<img src="'+gambarPng+'" style="width: 100%"></img>'); }, function(){  } );
+
+			if( $('#gambarBarang').html() == '<i class="fa fa-spin fa-refresh"></i>' ) $('#gambarBarang').html('<img src="'+gambarDefault+'" style="width: 100%"></img>');
 		}); // End event handler tombol Gambar dalam tabel penjualan
 
 		// Event handler tombol Hapus dalam tabel penjualan
@@ -1264,10 +1291,11 @@
 			var namaPelanggan = $('input[name="cari_pelanggan"]').val();
 			var alamatPelanggan = $('input[name="alamat"]').val();
 			var teleponPelanggan = $('input[name="telepon"]').val();
+			var ekspedisiPelanggan = $('input[name="ekspedisi"]').val();
 			var keterangan = $('input[name="keterangan"]').val();
 			var isiNotaString = JSON.stringify(isiNota);
-
-			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, keterangan, isiNotaString);
+			
+			simpanNotaLokal(today, subTotal, diskonTotal, statusDiskonTotal, totalPenjualan, nomorInvoice, idPelanggan, namaPelanggan, alamatPelanggan, teleponPelanggan, ekspedisiPelanggan, keterangan, isiNotaString);
 			// console.log(isiNota);
 		}); // End event handler tombol Cetak Nota
 	});

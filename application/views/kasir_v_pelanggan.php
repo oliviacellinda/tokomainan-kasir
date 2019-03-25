@@ -41,7 +41,6 @@
 								<!-- Header Tabel -->
 								<thead>
 								<tr>
-									<th width="162.6px">ID Pelanggan</th>
 									<th width="162.6px">Nama</th>
 									<th width="162.6px">Alamat</th>
 									<th width="162.6px">Ekspedisi</th>
@@ -104,7 +103,6 @@
 					var isi = '<tbody>';
 					// Untuk baris input data pelanggan baru
 					isi += '<tr id="barisInput">';
-					isi += '<td></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Nama" name="nama_pelanggan" autocomplete="off"></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Alamat" name="alamat_pelanggan" autocomplete="off"></td>';
 					isi += '<td><input type="text" class="form-control" placeholder="Ekspedisi" name="ekspedisi" autocomplete="off"></td>';
@@ -113,8 +111,7 @@
 					// Untuk daftar pelanggan
                     if(data != 'no data') {
                         for(var i=0; i<data.length; i++) {
-                            isi += '<tr>';
-                            isi += '<td>'+data[i].id_pelanggan+'</td>';
+                            isi += '<tr data-id="'+data[i].id_pelanggan+'">';
                             isi += '<td>'+data[i].nama_pelanggan+'</td>';
                             isi += '<td>'+data[i].alamat_pelanggan+'</td>';
                             isi += '<td>'+data[i].ekspedisi+'</td>';
@@ -252,58 +249,58 @@
             });
 		} // End fungsi sinkronisasiPelanggan
 
-		// Event handler untuk edit pelanggan
-        $('#tabelPelanggan').on('keypress', 'td', function(event) {
-            // Cek apakah tombol yg ditekan adalah tombol Enter
-			if(event.keyCode === 13) {
-				// Cek apakah tombol ditekan pada barisan input data baru
-				if( tabel.row($(this).parents('tr')).id() != 'barisInput' ) {
-					// Tampilkan pesan loading
-					pesanLoading();
+		// // Event handler untuk edit pelanggan
+        // $('#tabelPelanggan').on('keypress', 'td', function(event) {
+        //     // Cek apakah tombol yg ditekan adalah tombol Enter
+		// 	if(event.keyCode === 13) {
+		// 		// Cek apakah tombol ditekan pada barisan input data baru
+		// 		if( tabel.row($(this).parents('tr')).id() != 'barisInput' ) {
+		// 			// Tampilkan pesan loading
+		// 			pesanLoading();
 
-					var dataBaris = tabel.row($(this).parents('tr')).data();
-					var dataSel = nilaiBaru; // nilaiBaru dari fungsi ambilNilaiBaru di atas
-					var kolom = tabel.cell(this).index().column; // Dapatkan posisi kolom
+		// 			var dataBaris = tabel.row($(this).parents('tr')).data();
+		// 			var dataSel = nilaiBaru; // nilaiBaru dari fungsi ambilNilaiBaru di atas
+		// 			var kolom = tabel.cell(this).index().column; // Dapatkan posisi kolom
 
-					// Karena data yang diperoleh berupa string <input type="text"... , data harus dibersihkan dulu
-					var id_pelanggan = dataBaris[0];
+		// 			// Karena data yang diperoleh berupa string <input type="text"... , data harus dibersihkan dulu
+		// 			var id_pelanggan = dataBaris[0];
 					
-					// Dapatkan nama kolom (field yang ingin diubah nilainya) dari variabel kolom
-					var namaKolom;
-					switch(kolom) {
-						case 1 : namaKolom = 'nama_pelanggan'; break;
-						case 2 : namaKolom = 'alamat_pelanggan'; break;
-						case 3 : namaKolom = 'telepon_pelanggan'; break;
-						case 4 : namaKolom = 'maks_utang' ; break;
-						case 5 : namaKolom = 'level'; break;
-					}
+		// 			// Dapatkan nama kolom (field yang ingin diubah nilainya) dari variabel kolom
+		// 			var namaKolom;
+		// 			switch(kolom) {
+		// 				case 1 : namaKolom = 'nama_pelanggan'; break;
+		// 				case 2 : namaKolom = 'alamat_pelanggan'; break;
+		// 				case 3 : namaKolom = 'telepon_pelanggan'; break;
+		// 				case 4 : namaKolom = 'maks_utang' ; break;
+		// 				case 5 : namaKolom = 'level'; break;
+		// 			}
 					
-					$.ajax({
-						type	: 'post',
-						url		: 'edit-pelanggan',
-						data	: {
-							id_pelanggan : id_pelanggan,
-							nama_kolom: namaKolom,
-							nilai_baru: dataSel
-						},
-						success : function() {
-							// Perbarui isi tabel
-							refreshTabel();
+		// 			$.ajax({
+		// 				type	: 'post',
+		// 				url		: 'edit-pelanggan',
+		// 				data	: {
+		// 					id_pelanggan : id_pelanggan,
+		// 					nama_kolom: namaKolom,
+		// 					nilai_baru: dataSel
+		// 				},
+		// 				success : function() {
+		// 					// Perbarui isi tabel
+		// 					refreshTabel();
 
-							// Tampilkan pesan pemberitahuan
-							pesanPemberitahuan('success', 'Data berhasil diperbarui');
+		// 					// Tampilkan pesan pemberitahuan
+		// 					pesanPemberitahuan('success', 'Data berhasil diperbarui');
 
-							// Hapus pesan loading
-							$('div.overlay').remove();
-						},
-						error	: function() {
-							// Tampilkan pesan pemberitahuan
-							pesanPemberitahuan('warning', 'Terdapat kesalahan saat memuat data. Silakan mencoba kembali.');
-						}
-					}); // End ajax
-				} // End if pengecekan baris input
-			} // End if pengecekan tombol Enter
-        }); // End event handler untuk edit pelanggan
+		// 					// Hapus pesan loading
+		// 					$('div.overlay').remove();
+		// 				},
+		// 				error	: function() {
+		// 					// Tampilkan pesan pemberitahuan
+		// 					pesanPemberitahuan('warning', 'Terdapat kesalahan saat memuat data. Silakan mencoba kembali.');
+		// 				}
+		// 			}); // End ajax
+		// 		} // End if pengecekan baris input
+		// 	} // End if pengecekan tombol Enter
+        // }); // End event handler untuk edit pelanggan
 	});
 	</script>
 </body>

@@ -121,8 +121,9 @@
             $('#pesanProgress').text('Sinkronisasi data penjualan.');
             $.ajax({
                 url     : 'sinkronisasi-penjualan',
-                dataType: 'json',
+                // dataType: 'json',
                 success : function(data) {
+                    console.log(data);
                     if(data == 'cant connect') {
                         var pesan = '<p>Error sinkronisasi penjualan: Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.</p>';
                         $('#pesanError').append(pesan);
@@ -133,6 +134,7 @@
                     }
                 },
                 error   : function(response) {
+                    // console.log(response.responseText);
                     var pesan = '<p>Error sinkronisasi penjualan. Silakan mencoba kembali setelah beberapa saat.</p>';
                     $('#pesanError').append(pesan);
                 },

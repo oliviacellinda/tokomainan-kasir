@@ -12,6 +12,11 @@
 	<link rel="stylesheet" href="<?php echo base_url('assets/AdminLTE-2.4.2/dist/css/AdminLTE.min.css');?>">
 	<link rel="stylesheet" href="<?php echo base_url('assets/AdminLTE-2.4.2/dist/css/skins/skin-blue.min.css');?>">
 	<link rel="stylesheet" href="<?php echo base_url('assets/Source_Sans_Pro/font.css');?>">
+	<style>
+		thead th {
+			white-space: nowrap;
+		}
+	</style>
 </head>
 
 <body class="hold-transition skin-blue layout-top-nav">
@@ -36,12 +41,15 @@
 								<!-- Header Tabel -->
 								<thead>
 								<tr>
-									<th width="162.6px">ID Barang</th>
-									<th width="162.6px">Nama Barang</th>
-									<th width="100px">Harga Barang</th>
-									<th width="100px">Stok</th>
-									<th width="100px">Umur</th>
-									<th width="100px">Jumlah dlm Koli</th>
+									<th>ID Barang</th>
+									<th>Nama Barang</th>
+									<th>Harga Level 1</th>
+									<th>Harga Level 2</th>
+									<th>Harga Level 3</th>
+									<th>Harga Level 4</th>
+									<th>Stok</th>
+									<th>Umur</th>
+									<th>Jumlah dlm Koli</th>
 								</tr>
 								</thead>
 
@@ -99,6 +107,9 @@
                             isi += '<tr>';
                             isi += '<td>'+data[i].id_barang+'</td>';
                             isi += '<td>'+data[i].nama_barang+'</td>';
+                            isi += '<td data-order="'+data[i].harga_jual_1+'">Rp. '+data[i].harga_jual_1+'</td>';
+                            isi += '<td data-order="'+data[i].harga_jual_2+'">Rp. '+data[i].harga_jual_2+'</td>';
+                            isi += '<td data-order="'+data[i].harga_jual_3+'">Rp. '+data[i].harga_jual_3+'</td>';
                             isi += '<td data-order="'+data[i].harga_jual_4+'">Rp. '+data[i].harga_jual_4+'</td>';
                             isi += '<td data-order="'+data[i].stok_barang+'">'+data[i].stok_barang+' pcs</td>';
                             isi += '<td data-order="'+data[i].umur_barang+'">'+data[i].umur_barang+' hari</td>';

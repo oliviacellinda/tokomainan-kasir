@@ -71,7 +71,7 @@ $route['lihat-stok']                  = 'kasir_c_stok/lihat_stok';
 $route['pelanggan']                   = 'kasir_c_pelanggan/pelanggan';
 $route['lihat-pelanggan']             = 'kasir_c_pelanggan/lihat_pelanggan';
 $route['tambah-pelanggan']            = 'kasir_c_pelanggan/tambah_pelanggan';
-$route['edit-pelanggan']              = 'kasir_c_pelanggan/edit_pelanggan';
+// $route['edit-pelanggan']              = 'kasir_c_pelanggan/edit_pelanggan';
 
 $route['sinkronisasi-data']           = 'kasir_c_sinkronisasi/sinkronisasi_data';
 $route['sinkronisasi-pelanggan']      = 'kasir_c_sinkronisasi/sinkronisasi_pelanggan';

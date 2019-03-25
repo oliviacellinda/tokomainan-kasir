@@ -62,7 +62,7 @@ class kasir_m_sinkronisasi extends CI_Model {
     }
 
     public function data_penjualan_blm_upload() {
-        $this->db->select('id_invoice, tgl_invoice, id_kasir, sub_total_penjualan, diskon_penjualan, status_diskon_penjualan, total_penjualan, id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, keterangan');
+        $this->db->select('id_invoice, tgl_invoice, id_kasir, sub_total_penjualan, diskon_penjualan, status_diskon_penjualan, total_penjualan, id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, ekspedisi, keterangan');
         $this->db->where('status_upload', 0);
         $query = $this->db->get('laporan_penjualan');
 

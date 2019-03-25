@@ -37,12 +37,13 @@ class kasir_c_penjualan extends CI_Controller {
         if($data != '') {
 			// Ubah data sesuai dengan format autocomplete jquery-ui, jquery-ui membutuhkan informasi label dan value
 			for($i=0; $i<count($data); $i++) {
-				$response[$i]['label']   = $data[$i]['nama_pelanggan'];
-                $response[$i]['value']   = $data[$i]['nama_pelanggan'];
-                $response[$i]['id']      = $data[$i]['id_pelanggan'];
-                $response[$i]['alamat']  = $data[$i]['alamat_pelanggan'];
-                $response[$i]['telepon'] = $data[$i]['telepon_pelanggan'];
-                $response[$i]['level']   = $data[$i]['level'];
+				$response[$i]['label']      = $data[$i]['nama_pelanggan'];
+                $response[$i]['value']      = $data[$i]['nama_pelanggan'];
+                $response[$i]['id']         = $data[$i]['id_pelanggan'];
+                $response[$i]['alamat']     = $data[$i]['alamat_pelanggan'];
+                $response[$i]['telepon']    = $data[$i]['telepon_pelanggan'];
+                $response[$i]['level']      = $data[$i]['level'];
+                $response[$i]['ekspedisi']  = $data[$i]['ekspedisi'];
 			}
 			echo json_encode($response);
         }
@@ -202,6 +203,7 @@ class kasir_c_penjualan extends CI_Controller {
             'nama_pelanggan'          => $this->input->post('namaPelanggan'),
             'alamat_pelanggan'        => $this->input->post('alamatPelanggan'),
             'telepon_pelanggan'       => $this->input->post('teleponPelanggan'),
+            'ekspedisi'               => $this->input->post('ekspedisiPelanggan'),
             'keterangan'              => $this->input->post('keterangan'),
             'status_upload'           => 0
         );        
@@ -254,6 +256,7 @@ class kasir_c_penjualan extends CI_Controller {
             'nama_pelanggan'          => $this->input->post('namaPelanggan'),
             'alamat_pelanggan'        => $this->input->post('alamatPelanggan'),
             'telepon_pelanggan'       => $this->input->post('teleponPelanggan'),
+            'ekspedisi'               => $this->input->post('ekspedisiPelanggan'),
             'keterangan'              => $this->input->post('keterangan')
         );
         $isiNota = json_decode($this->input->post('isiNotaString'), true);

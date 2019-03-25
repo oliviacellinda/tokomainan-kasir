@@ -234,7 +234,7 @@ class kasir_c_sinkronisasi extends CI_Controller {
             );
             $context = stream_context_create($opts);
             $result = @file_get_contents(url_admin().'tambah-laporan-penjualan', false, $context);
-            
+
             if($result === false) {
                 echo json_encode('cant connect');
                 exit();
