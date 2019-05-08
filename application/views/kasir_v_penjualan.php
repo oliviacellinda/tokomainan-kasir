@@ -473,7 +473,6 @@
 				'fnRowCallback'		: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					/* push this row of data to currData array */
 					currData.push(aData);
-			
 				},
 				'fnDrawCallback'	: function(oSettings) {
 					/* can now access sorted data array */
@@ -481,6 +480,7 @@
 					isiNotaPrint = currData;
 				}
 			});
+			// console.log(isiNotaPrint);
 		} // End fungsi refreshTabelPenjualan
 
 		// Fungsi untuk menampilkan pesan loading selama proses berlangsung
@@ -745,6 +745,7 @@
 				
 				if(i+1 == jumlahHlm) {
 					var batas = data.length % 10;
+					batas = (batas == 0) ? 10 : batas; // Untuk data dengan kelipatan 10
 					for(j=i*10; j<(i*10)+batas; j++) {
 						dataPerHlm.push(data[j]);
 					}
@@ -1135,12 +1136,12 @@
 								case '4' : input.harga = temp.harga_jual_4; break;
 							}
 							isiNota.push(input);
-
-							refreshTabelPenjualan();
 						} // End if hasil pencarian tidak undefined
 					} // End if barang belum ada di nota
 
 					$('.overlay').remove();
+
+					refreshTabelPenjualan();
 				}
 				else {
 					pesanPemberitahuan('warning', 'Jenis barang telah mencapai 10 macam, tidak dapat menambah barang dalam nota lagi!');
