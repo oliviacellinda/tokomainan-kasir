@@ -151,7 +151,7 @@
 
                 <!-- Isi Modal -->
                 <div class="modal-body">
-					<div id="pesanPemberitahuanModal"></div>
+					<div id="pesanPemberitahuanModalPelanggan"></div>
                     <div class="row">
                         <div class="col-xs-12">
                             <form id="formTambahPelanggan">
@@ -198,6 +198,7 @@
 
                 <!-- Isi Modal -->
                 <div class="modal-body">
+					<div id="pesanPemberitahuanModalBarang"></div>
 					<div id="loadingBarang" class="row"></div>
                     <div class="row">
                         <div class="col-xs-12">
@@ -505,7 +506,7 @@
 		} // End fungsi pesanPemberitahuan
 
 		// Fungsi untuk menampilkan pesan pemberitahuan pada modal tambah pelanggan
-		function pesanPemberitahuanModal(jenis, pesan) {
+		function pesanPemberitahuanModalPelanggan(jenis, pesan) {
 			// Hapus terlebih dahulu jika sudah ada pesan pemberitahuan sebelumnya
 			$('.alert').remove();
 
@@ -513,8 +514,20 @@
 			alert += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 			alert += pesan;
 			alert += '</div>';
-			$('#pesanPemberitahuanModal').append(alert);
-		} // End fungsi pesanPemberitahuan
+			$('#pesanPemberitahuanModalPelanggan').append(alert);
+		} // End fungsi pesanPemberitahuanModalPelanggan
+
+		// Fungsi untuk menampilkan pesan pemberitahuan pada modal daftar barang
+		function pesanPemberitahuanModalBarang(jenis, pesan) {
+			// Hapus terlebih dahulu jika sudah ada pesan pemberitahuan sebelumnya
+			$('.alert').remove();
+
+			var alert = '<div class="alert alert-'+jenis+' alert-dismissible" role="alert">';
+			alert += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			alert += pesan;
+			alert += '</div>';
+			$('#pesanPemberitahuanModalBarang').append(alert);
+		} // End fungsi pesanPemberitahuanModalBarang
 
 		// Fungsi untuk menyesuaikan tombol Pilih dalam modal daftar barang
 		function adjustTombolPilih() {
@@ -976,20 +989,20 @@
 							var statusSinkronisasi = 0; // variabel status untuk mengecek keberhasilan sinkronisasi
 
 							if(data == 'cant connect') {
-								pesanPemberitahuanModal('warning', 'Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.');
+								pesanPemberitahuanModalPelanggan('warning', 'Tidak dapat terhubung dengan database pusat. Silakan mencoba kembali setelah beberapa saat.');
 							}
 							else if(data == 'fail') {
-								pesanPemberitahuanModal('warning', 'Gagal menyimpan data pelanggan baru.');
+								pesanPemberitahuanModalPelanggan('warning', 'Gagal menyimpan data pelanggan baru.');
 							}
 							else if(data == 'cant connect to sync') {
-								pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal karena tidak dapat terhubung dengan database pusat.');
+								pesanPemberitahuanModalPelanggan('warning', 'Sinkronisasi data pelanggan gagal karena tidak dapat terhubung dengan database pusat.');
 								statusSimpan = 1;
 							}
 							else {
 								statusSimpan = 1;
 
 								if(data.flag_error == 1) {
-									pesanPemberitahuanModal('warning', 'Sinkronisasi data pelanggan gagal. Silakan mencoba kembali setelah beberapa saat.');
+									pesanPemberitahuanModalPelanggan('warning', 'Sinkronisasi data pelanggan gagal. Silakan mencoba kembali setelah beberapa saat.');
 								}
 								else statusSinkronisasi = 1;
 							}
@@ -1017,7 +1030,7 @@
 						},
 						error : function(response) {
 							console.log(response.responseText);
-							pesanPemberitahuanModal('warning', 'Gagal menyimpan data pelanggan baru.');
+							pesanPemberitahuanModalPelanggan('warning', 'Gagal menyimpan data pelanggan baru.');
 						}
 					});
 				}
@@ -1040,38 +1053,44 @@
 
 		// Event handler button Pilih dalam modal daftar barang
 		$('#tabelBarang').on('click', '#btnPilihBarang', function() {
-			// Level pelanggan
-			var level = $('input[name="level"]').val();
-			// Seluruh data yang berada di baris yang sama dengan tombol Pilih yang diklik
-			var data = tabelBarang.row($(this).parents('tr')).data();
-			var pilihan = {
-				idBarang	: data[1],
-				namaBarang	: data[2],
-				jumlah		: 0,
-				harga		: 0,
-				diskon		: 0,
-				statusDiskon: '',
-				totalHarga	: 0,
-				jmlDlmKoli	: data[3],
-				kemasan		: data[4],
-				fungsi		: data[5]
-			};
+			// Cek apakah sudah ada 10 barang dalam nota
+			if(isiNota.length < 10) {
+				// Level pelanggan
+				var level = $('input[name="level"]').val();
+				// Seluruh data yang berada di baris yang sama dengan tombol Pilih yang diklik
+				var data = tabelBarang.row($(this).parents('tr')).data();
+				var pilihan = {
+					idBarang	: data[1],
+					namaBarang	: data[2],
+					jumlah		: 0,
+					harga		: 0,
+					diskon		: 0,
+					statusDiskon: '',
+					totalHarga	: 0,
+					jmlDlmKoli	: data[3],
+					kemasan		: data[4],
+					fungsi		: data[5]
+				};
 
-			// Cek harga
-			var temp = daftarBarang.find(arr => arr.id_barang === data[1]);
-			switch(level) {
-				case '1' : pilihan.harga = temp.harga_jual_1; break;
-				case '2' : pilihan.harga = temp.harga_jual_2; break;
-				case '3' : pilihan.harga = temp.harga_jual_3; break;
-				case '4' : pilihan.harga = temp.harga_jual_4; break;
+				// Cek harga
+				var temp = daftarBarang.find(arr => arr.id_barang === data[1]);
+				switch(level) {
+					case '1' : pilihan.harga = temp.harga_jual_1; break;
+					case '2' : pilihan.harga = temp.harga_jual_2; break;
+					case '3' : pilihan.harga = temp.harga_jual_3; break;
+					case '4' : pilihan.harga = temp.harga_jual_4; break;
+				}
+
+				isiNota.push(pilihan);
+
+				// Disable button Pilih pada baris data yang telah dipilih
+				$(this).prop('disabled', 'remove');
+
+				totalPenjualan();
 			}
-
-			isiNota.push(pilihan);
-
-			// Disable button Pilih pada baris data yang telah dipilih
-			$(this).prop('disabled', 'remove');
-
-			totalPenjualan();
+			else {
+				pesanPemberitahuanModalBarang('warning', 'Jenis barang telah mencapai 10 macam, tidak dapat menambah barang dalam nota lagi!');
+			}
 		}); // End event klik button Pilih pada modal daftar barang
 
 		// Event handler saat selesai memilih barang dan menutup modal
@@ -1084,42 +1103,48 @@
 		// Event handler tombol Enter di input ID Barang, untuk menambah daftar nota sesuai dengan ID Barang yang dimasukkan
 		$('#tabelPenjualan').on('keypress', '#barisInput input[name="id_barang"]', function(event) {
 			if(event.keyCode === 13) {
-				pesanLoading();
+				// Cek apakah sudah ada 10 barang dalam nota
+				if(isiNota.length < 10) {
+					pesanLoading();
 
-				var id_barang = $('#barisInput input[name="id_barang"]').val();
+					var id_barang = $('#barisInput input[name="id_barang"]').val();
 
-				// Cek apakah barang sudah ada di daftar nota, tambahkan ke nota jika belum ada
-				var cek = isiNota.find(arr => arr.idBarang === id_barang);
-				if(cek == null) {
-					// Cek apakah kode barang ada dalam daftar barang, tambahkan ke nota jika kode barang terdaftar
-					var temp = daftarBarang.find(arr => arr.id_barang === id_barang);
-					if(temp != null) {
-						var input = {
-							idBarang	: temp.id_barang,
-							namaBarang	: temp.nama_barang,
-							jumlah		: 0,
-							harga		: 0,
-							diskon		: 0,
-							statusDiskon: '',
-							totalHarga	: 0,
-							jmlDlmKoli	: temp.jumlah_dlm_koli,
-							kemasan		: temp.kemasan,
-							fungsi		: temp.fungsi
-						};
-						var level = $('input[name="level"]').val();
-						switch(level) {
-							case '1' : input.harga = temp.harga_jual_1; break;
-							case '2' : input.harga = temp.harga_jual_2; break;
-							case '3' : input.harga = temp.harga_jual_3; break;
-							case '4' : input.harga = temp.harga_jual_4; break;
-						}
-						isiNota.push(input);
+					// Cek apakah barang sudah ada di daftar nota, tambahkan ke nota jika belum ada
+					var cek = isiNota.find(arr => arr.idBarang === id_barang);
+					if(cek == null) {
+						// Cek apakah kode barang ada dalam daftar barang, tambahkan ke nota jika kode barang terdaftar
+						var temp = daftarBarang.find(arr => arr.id_barang === id_barang);
+						if(temp != null) {
+							var input = {
+								idBarang	: temp.id_barang,
+								namaBarang	: temp.nama_barang,
+								jumlah		: 0,
+								harga		: 0,
+								diskon		: 0,
+								statusDiskon: '',
+								totalHarga	: 0,
+								jmlDlmKoli	: temp.jumlah_dlm_koli,
+								kemasan		: temp.kemasan,
+								fungsi		: temp.fungsi
+							};
+							var level = $('input[name="level"]').val();
+							switch(level) {
+								case '1' : input.harga = temp.harga_jual_1; break;
+								case '2' : input.harga = temp.harga_jual_2; break;
+								case '3' : input.harga = temp.harga_jual_3; break;
+								case '4' : input.harga = temp.harga_jual_4; break;
+							}
+							isiNota.push(input);
 
-						refreshTabelPenjualan();
-					} // End if hasil pencarian tidak undefined
-				} // End if barang belum ada di nota
+							refreshTabelPenjualan();
+						} // End if hasil pencarian tidak undefined
+					} // End if barang belum ada di nota
 
-				$('.overlay').remove();
+					$('.overlay').remove();
+				}
+				else {
+					pesanPemberitahuan('warning', 'Jenis barang telah mencapai 10 macam, tidak dapat menambah barang dalam nota lagi!');
+				}
 			}
 		}); // End event handler tekan tombol Enter di input ID Barang pada baris 
 		
