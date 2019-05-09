@@ -8,7 +8,7 @@ class kasir_m_pelanggan extends CI_Model {
     }
 
     public function lihat_pelanggan() {
-        $this->db->where('level', 4);
+        // $this->db->where('level', 4);
         $query = $this->db->get('pelanggan');
 
         if($query->num_rows() > 0) {

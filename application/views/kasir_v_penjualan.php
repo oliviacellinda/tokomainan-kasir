@@ -460,7 +460,11 @@
 				'order'			: [[ 0, 'asc' ]],
 				'columnDefs'	: [
 					{ 'orderable' : false, 'targets' : [ 1, 2, 4, 5, 6, 7, 8 ] },
-					{ 'targets' : 0, 'type' : nomorType },
+					{ 'targets' : 0,
+					  'type' 	: nomorType,
+					  'render'	: function(data, type, full, meta) {
+						  return (data == '') ? data : parseInt(data);
+					  } },
 					{ 'targets' : 3, 'type' : kategoriType }
 				],
 				'paging'		: false,

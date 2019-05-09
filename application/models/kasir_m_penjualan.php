@@ -15,7 +15,7 @@ class kasir_m_penjualan extends CI_Model {
     public function cari_pelanggan($keyword) {
         $this->db->select('id_pelanggan, nama_pelanggan, alamat_pelanggan, telepon_pelanggan, level, ekspedisi');
         $this->db->from('pelanggan');
-        $this->db->where('level', 4);
+        // $this->db->where('level', 4);
         $this->db->like('nama_pelanggan', $keyword);
         $query = $this->db->get();
 
