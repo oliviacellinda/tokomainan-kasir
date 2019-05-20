@@ -268,7 +268,7 @@
 	// Deklarasi variabel global
 	var isiNota = new Array();
 	var isiNotaPrint = new Array();
-	var daftarBarang = JSON.parse('<?php echo json_encode($daftar_barang);?>');
+	var daftarBarang = JSON.parse('<?php echo addslashes(json_encode($daftar_barang));?>');
 	var namaToko = '<?php echo $nama_toko['nama_toko'];?>';
 	var idBarangBaru, jumlahBaru, diskonBaru; // variabel yang digunakan untuk edit data nota
 
@@ -1078,7 +1078,7 @@
 				};
 
 				// Cek harga
-				var temp = daftarBarang.find(arr => arr.id_barang === data[1]);
+				var temp = daftarBarang.find(arr => arr.id_barang.trim() === data[1]);
 				switch(level) {
 					case '1' : pilihan.harga = temp.harga_jual_1; break;
 					case '2' : pilihan.harga = temp.harga_jual_2; break;
@@ -1112,13 +1112,13 @@
 				if(isiNota.length < 10) {
 					pesanLoading();
 
-					var id_barang = $('#barisInput input[name="id_barang"]').val();
+					var id_barang = $('#barisInput input[name="id_barang"]').val().trim().toUpperCase();
 
 					// Cek apakah barang sudah ada di daftar nota, tambahkan ke nota jika belum ada
-					var cek = isiNota.find(arr => arr.idBarang === id_barang);
+					var cek = isiNota.find(arr => arr.idBarang.trim().toUpperCase() === id_barang);
 					if(cek == null) {
 						// Cek apakah kode barang ada dalam daftar barang, tambahkan ke nota jika kode barang terdaftar
-						var temp = daftarBarang.find(arr => arr.id_barang === id_barang);
+						var temp = daftarBarang.find(arr => arr.id_barang.trim().toUpperCase() === id_barang);
 						if(temp != null) {
 							var input = {
 								idBarang	: temp.id_barang,
